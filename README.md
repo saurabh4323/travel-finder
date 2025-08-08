@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+
+## Saurabh
+1 next js lucid react for icons node js frameworks
+2 driver admin control user 
+Schema design
+User - name ,email ,phone no ,otp ,password, user token, age
+Driver- driving licence ,name,phoneno, otp , password,vechicle no,verified
+
+// travel time - user tokens ,source ,destination ,time, driver review
+//Map = user token first, second,souce,destination,,fare, time, drive name ,vechicle no 
+//admin password: Bhailog
+
+
+
+Tripfinder//
+Dest ,source, name ,photo, smoke, drink, single, male,femlale,usert
+
