@@ -1,12 +1,14 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema({
-    password: {
-        type: String,
-        required: true
-    }
-})
+  password: {
+    type: String,
+    required: true,
+  },
+});
 
-const adminSchemasave = mongoose.models.adminSchemasave || mongoose.model("adminSchemasave", adminSchema)
+const adminSchemasave =
+  mongoose.models.adminSchemasave ||
+  mongoose.model("adminSchemasave", adminSchema);
 
 export default adminSchemasave;
