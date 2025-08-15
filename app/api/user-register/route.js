@@ -24,23 +24,23 @@ export async function POST(request) {
     const hashedpassword = bcrypt.hashSync(password, saltRounds);
 
     const usertokenuuid = uuidv4();
-
+    const msg = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
     // ----------------------
     const savetheuser = new UserSchemasave({
       name,
       email,
       phoneNumber,
-
+      OTP: msg,
       password: hashedpassword,
       userToken: usertokenuuid,
       age,
     });
     const user = await savetheuser.save();
     const subject = "Your L'Oréal Sustainability Challenge 2025 marks";
-    const msg = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      specialChars: false,
-    });
+
     const fromName = "Sustainability@codelesspages.info";
     await fetch("http://localhost:3000/api/user-register/verify", {
       method: "POST",
@@ -54,6 +54,7 @@ export async function POST(request) {
     });
 
     return NextResponse.json({
+      success: true,
       message: "Account  registered",
       status: 200,
       data: user,

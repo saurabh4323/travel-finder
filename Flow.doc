@@ -1,0 +1,13 @@
+user register from frontend request
+
+first register go on  - >http://localhost:3000/api/user-register
+
+then the mail will go automaticlly by backend on path - > 
+http://localhost:3000/api/user-register/verify
+
+then user will see  a popop of verufy otp which mail ahs came to him 
+that verifictaion will be on path 
+
+http://localhost:3000/api/user-register/otpverify
+
+after that he will be verifed
