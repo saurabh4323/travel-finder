@@ -169,72 +169,109 @@ export default function RegistrationPage() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-white via-purple-50 to-purple-100 relative overflow-hidden flex items-center justify-center p-6"
+      className="min-h-screen relative overflow-hidden flex items-center justify-center p-6"
       style={{
         background:
-          "linear-gradient(135deg, #ffffff 0%, #f8f6ff 25%, #f0ebff 50%, #e8e0ff 75%, #877ef2 100%)",
+          "radial-gradient(ellipse at top, #f5f5f5 0%, #ffffff 50%, #fafafa 100%)",
       }}
     >
-      {/* Animated Background Elements */}
+      {/* Animated Background Elements - Light tones */}
       <div className="absolute inset-0 overflow-hidden">
+        {/* Main gradient orbs - light */}
         <div
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl animate-pulse"
-          style={{ background: "rgba(135, 126, 242, 0.15)" }}
+          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl animate-pulse opacity-15"
+          style={{
+            background:
+              "linear-gradient(135deg, #d1d5db 0%, #e5e7eb 50%, #f3f4f6 100%)",
+            animationDuration: "6s",
+          }}
         ></div>
         <div
-          className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse"
+          className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse opacity-12"
           style={{
-            background: "rgba(135, 126, 242, 0.12)",
+            background:
+              "linear-gradient(135deg, #c1c7cd 0%, #e5e7eb 50%, #f3f4f6 100%)",
             animationDelay: "2s",
+            animationDuration: "8s",
           }}
         ></div>
         <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-3xl animate-pulse"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse opacity-8"
           style={{
-            background: "rgba(135, 126, 242, 0.08)",
+            background:
+              "linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 25%, #f9fafb 50%, #ffffff 100%)",
             animationDelay: "1s",
+            animationDuration: "10s",
+          }}
+        ></div>
+
+        {/* Floating elements - light */}
+        <div
+          className="absolute top-20 right-20 w-32 h-32 rounded-full blur-2xl animate-bounce opacity-20"
+          style={{
+            background: "linear-gradient(45deg, #d1d5db 0%, #e5e7eb 100%)",
+            animationDelay: "3s",
+            animationDuration: "4s",
           }}
         ></div>
         <div
-          className="absolute top-20 right-20 w-32 h-32 bg-white/20 rounded-full blur-2xl animate-pulse"
-          style={{ animationDelay: "3s" }}
-        ></div>
-        <div
-          className="absolute bottom-20 left-20 w-40 h-40 bg-white/15 rounded-full blur-2xl animate-pulse"
-          style={{ animationDelay: "4s" }}
-        ></div>
-        <div
-          className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full blur-xl animate-pulse"
+          className="absolute bottom-32 left-32 w-40 h-40 rounded-full blur-2xl animate-bounce opacity-15"
           style={{
-            background: "rgba(135, 126, 242, 0.06)",
+            background: "linear-gradient(225deg, #e5e7eb 0%, #f3f4f6 100%)",
+            animationDelay: "5s",
+            animationDuration: "5s",
+          }}
+        ></div>
+
+        {/* Geometric shapes - light */}
+        <div
+          className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full blur-xl animate-pulse opacity-18"
+          style={{
+            background: "linear-gradient(90deg, #d1d5db 0%, #e5e7eb 100%)",
             animationDelay: "2.5s",
+            animationDuration: "7s",
           }}
         ></div>
       </div>
 
-      {/* Subtle Animated Particles */}
+      {/* Animated Particles - light */}
       <div className="absolute inset-0 overflow-hidden">
         <div
-          className="absolute top-1/4 left-1/4 w-1 h-1 rounded-full animate-ping"
+          className="absolute top-1/4 left-1/4 w-2 h-2 bg-gray-300 rounded-full animate-ping opacity-30"
           style={{
-            background: "#877ef2",
-            opacity: "0.4",
             animationDelay: "1s",
             animationDuration: "4s",
           }}
         ></div>
         <div
-          className="absolute top-3/4 right-1/4 w-1 h-1 bg-white/60 rounded-full animate-ping"
+          className="absolute top-3/4 right-1/4 w-1 h-1 bg-gray-400 rounded-full animate-ping opacity-25"
           style={{ animationDelay: "3s", animationDuration: "5s" }}
         ></div>
         <div
-          className="absolute top-1/2 right-3/4 w-1 h-1 rounded-full animate-ping"
+          className="absolute top-1/2 right-3/4 w-1.5 h-1.5 bg-gray-300 rounded-full animate-ping opacity-20"
           style={{
-            background: "#877ef2",
-            opacity: "0.4",
             animationDelay: "2s",
             animationDuration: "6s",
           }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-gray-400 rounded-full animate-ping opacity-22"
+          style={{
+            animationDelay: "4s",
+            animationDuration: "7s",
+          }}
+        ></div>
+      </div>
+
+      {/* Floating geometric lines - light */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div
+          className="absolute top-20 left-20 w-32 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-15 animate-pulse"
+          style={{ animationDelay: "1s", animationDuration: "5s" }}
+        ></div>
+        <div
+          className="absolute bottom-40 right-40 w-24 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent opacity-12 animate-pulse"
+          style={{ animationDelay: "3s", animationDuration: "6s" }}
         ></div>
       </div>
 
@@ -246,38 +283,60 @@ export default function RegistrationPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1
-            className="text-5xl font-bold mb-4 drop-shadow-2xl tracking-tight"
+            className="text-6xl font-bold mb-6 drop-shadow-2xl tracking-tight animate-pulse"
             style={{
               background:
-                "linear-gradient(135deg, #877ef2 0%, #6366f1 50%, #4f46e5 100%)",
+                "linear-gradient(135deg, #000000 0%, #1f2937 25%, #374151 50%, #4b5563 75%, #6b7280 100%)",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
+              textShadow: "0 0 30px rgba(0, 0, 0, 0.2)",
+              animationDuration: "3s",
             }}
           >
             Join Our Platform
           </h1>
-          <p className="text-gray-600 text-lg drop-shadow-lg font-light tracking-wide">
+          <p
+            className="text-gray-600 text-xl drop-shadow-lg font-light tracking-wide animate-fade-in"
+            style={{
+              textShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
+              animationDelay: "0.5s",
+            }}
+          >
             Create your account to get started
           </p>
         </div>
 
         {/* Form Container */}
         <div
-          className="backdrop-blur-2xl rounded-3xl p-12 shadow-2xl border transform hover:scale-[1.01] transition-all duration-700"
+          className="backdrop-blur-2xl rounded-3xl p-12 shadow-2xl border transform hover:scale-[1.02] transition-all duration-700 group relative overflow-hidden"
           style={{
-            background: "rgba(255, 255, 255, 0.8)",
-            borderColor: "rgba(135, 126, 242, 0.3)",
-            boxShadow: "0 25px 50px -12px rgba(135, 126, 242, 0.25)",
+            background:
+              "linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 249, 250, 0.85) 50%, rgba(255, 255, 255, 0.9) 100%)",
+            borderColor: "rgba(6, 6, 6, 0.63)",
+            boxShadow:
+              "0 25px 50px -12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(209, 213, 219, 0.2)",
           }}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Animated border effect - light */}
+          <div
+            className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
+            style={{
+              background:
+                "linear-gradient(45deg, transparent, rgba(209, 213, 219, 0.2), transparent)",
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "xor",
+              padding: "2px",
+            }}
+          ></div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             {/* Name Field */}
             <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-gray-800 transition-colors tracking-wide">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
                 <User
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300"
-                  style={{ color: "#877ef2" }}
+                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                  style={{ color: "#374151" }}
                 />
                 Full Name
               </label>
@@ -287,20 +346,19 @@ export default function RegistrationPage() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Enter your full name"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] ${
+                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
                   errors.name
                     ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "focus:ring-opacity-30"
+                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
                 }`}
                 style={{
-                  background: "rgba(255, 255, 255, 0.6)",
-                  borderColor: errors.name
-                    ? "#f87171"
-                    : "rgba(135, 126, 242, 0.3)",
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
+                  border: "1px solid #000",
                 }}
               />
               {errors.name && (
-                <p className="text-red-400 text-sm animate-pulse">
+                <p className="text-red-500 text-sm animate-pulse">
                   {errors.name}
                 </p>
               )}
@@ -308,10 +366,10 @@ export default function RegistrationPage() {
 
             {/* Email Field */}
             <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-gray-800 transition-colors tracking-wide">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
                 <Mail
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300"
-                  style={{ color: "#877ef2" }}
+                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                  style={{ color: "#374151" }}
                 />
                 Email Address
               </label>
@@ -321,20 +379,19 @@ export default function RegistrationPage() {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Enter your email"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] ${
+                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
                   errors.email
                     ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "focus:ring-opacity-30"
+                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
                 }`}
                 style={{
-                  background: "rgba(255, 255, 255, 0.6)",
-                  borderColor: errors.email
-                    ? "#f87171"
-                    : "rgba(135, 126, 242, 0.3)",
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
+                  border: "1px solid #000",
                 }}
               />
               {errors.email && (
-                <p className="text-red-400 text-sm animate-pulse">
+                <p className="text-red-500 text-sm animate-pulse">
                   {errors.email}
                 </p>
               )}
@@ -342,10 +399,10 @@ export default function RegistrationPage() {
 
             {/* Phone Field */}
             <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-gray-800 transition-colors tracking-wide">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
                 <Phone
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300"
-                  style={{ color: "#877ef2" }}
+                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                  style={{ color: "#374151" }}
                 />
                 Phone Number
               </label>
@@ -355,20 +412,19 @@ export default function RegistrationPage() {
                 value={form.phoneNumber}
                 onChange={handleChange}
                 placeholder="Enter your phone number"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] ${
+                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
                   errors.phoneNumber
                     ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "focus:ring-opacity-30"
+                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
                 }`}
                 style={{
-                  background: "rgba(255, 255, 255, 0.6)",
-                  borderColor: errors.phoneNumber
-                    ? "#f87171"
-                    : "rgba(135, 126, 242, 0.3)",
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
+                  border: "1px solid #000",
                 }}
               />
               {errors.phoneNumber && (
-                <p className="text-red-400 text-sm animate-pulse">
+                <p className="text-red-500 text-sm animate-pulse">
                   {errors.phoneNumber}
                 </p>
               )}
@@ -376,10 +432,10 @@ export default function RegistrationPage() {
 
             {/* Age Field */}
             <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-gray-800 transition-colors tracking-wide">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
                 <Calendar
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300"
-                  style={{ color: "#877ef2" }}
+                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                  style={{ color: "#374151" }}
                 />
                 Age
               </label>
@@ -391,20 +447,19 @@ export default function RegistrationPage() {
                 placeholder="Enter your age"
                 min="18"
                 max="100"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] ${
+                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
                   errors.age
                     ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "focus:ring-opacity-30"
+                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
                 }`}
                 style={{
-                  background: "rgba(255, 255, 255, 0.6)",
-                  borderColor: errors.age
-                    ? "#f87171"
-                    : "rgba(135, 126, 242, 0.3)",
+                  background:
+                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
+                  border: "1px solid #000",
                 }}
               />
               {errors.age && (
-                <p className="text-red-400 text-sm animate-pulse">
+                <p className="text-red-500 text-sm animate-pulse">
                   {errors.age}
                 </p>
               )}
@@ -412,10 +467,10 @@ export default function RegistrationPage() {
 
             {/* Password Field - Full Width */}
             <div className="md:col-span-2 space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-gray-800 transition-colors tracking-wide">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
                 <Lock
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300"
-                  style={{ color: "#877ef2" }}
+                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
+                  style={{ color: "#374151" }}
                 />
                 Password
               </label>
@@ -426,23 +481,21 @@ export default function RegistrationPage() {
                   value={form.password}
                   onChange={handleChange}
                   placeholder="Create a strong password"
-                  className={`w-full px-5 py-4 pr-14 rounded-2xl backdrop-blur-sm border-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] ${
+                  className={`w-full px-5 py-4 pr-14 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
                     errors.password
                       ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                      : "focus:ring-opacity-30"
+                      : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
                   }`}
                   style={{
-                    background: "rgba(255, 255, 255, 0.6)",
-                    borderColor: errors.password
-                      ? "#f87171"
-                      : "rgba(135, 126, 242, 0.3)",
+                    background:
+                      "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
+                    border: "1px solid #000",
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 hover:scale-125"
-                  style={{ color: "#877ef2" }}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 hover:scale-125 text-gray-600 opacity-70 hover:opacity-100"
                 >
                   {showPassword ? (
                     <EyeOff className="w-6 h-6" />
@@ -452,7 +505,7 @@ export default function RegistrationPage() {
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-400 text-sm animate-pulse">
+                <p className="text-red-500 text-sm animate-pulse">
                   {errors.password}
                 </p>
               )}
@@ -464,21 +517,23 @@ export default function RegistrationPage() {
                 type="button"
                 onClick={handleSubmit}
                 disabled={isLoading}
-                className="w-full py-5 px-8 text-white font-semibold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 hover:rotate-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:rotate-0 shadow-2xl relative overflow-hidden group"
+                className="w-full py-5 px-8 text-white font-bold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 hover:rotate-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:rotate-0 shadow-2xl relative overflow-hidden group"
                 style={{
                   background:
-                    "linear-gradient(135deg, #877ef2 0%, #6366f1 50%, #4f46e5 100%)",
-                  boxShadow: "0 25px 50px -12px rgba(135, 126, 242, 0.25)",
+                    "linear-gradient(135deg, #1f2937 0%, #374151 25%, #4b5563 50%, #6b7280 75%, #9ca3af 100%)",
+                  border: "1px solid #000",
                 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-3 relative z-10">
                     <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
                     Creating Account...
                   </div>
                 ) : (
-                  <span className="relative z-10">Create Account</span>
+                  <span className="relative z-10 drop-shadow-lg">
+                    Create Account
+                  </span>
                 )}
               </button>
             </div>
@@ -488,10 +543,7 @@ export default function RegistrationPage() {
           <div className="mt-8 text-center">
             <p className="text-gray-600 text-sm font-light">
               Already have an account?{" "}
-              <button
-                className="font-medium transition-all duration-300 hover:scale-110 inline-block transform"
-                style={{ color: "#877ef2" }}
-              >
+              <button className="font-medium text-gray-800 transition-all duration-300 hover:scale-110 inline-block transform hover:text-black underline decoration-gray-400/30 hover:decoration-gray-600/60">
                 Sign in here
               </button>
             </p>
@@ -502,17 +554,11 @@ export default function RegistrationPage() {
         <div className="text-center mt-8">
           <p className="text-gray-500 text-xs font-light">
             By creating an account, you agree to our{" "}
-            <button
-              className="transition-all duration-300 hover:scale-105 inline-block transform"
-              style={{ color: "#877ef2" }}
-            >
+            <button className="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 inline-block transform underline decoration-gray-400 hover:decoration-gray-600">
               Terms of Service
             </button>{" "}
             and{" "}
-            <button
-              className="transition-all duration-300 hover:scale-105 inline-block transform"
-              style={{ color: "#877ef2" }}
-            >
+            <button className="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 inline-block transform underline decoration-gray-400 hover:decoration-gray-600">
               Privacy Policy
             </button>
           </p>
@@ -521,46 +567,66 @@ export default function RegistrationPage() {
 
       {/* OTP Verification Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
           <div
-            className="bg-white rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-100 animate-in"
+            className="rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-100 animate-in border relative overflow-hidden group"
             style={{
-              background: "rgba(255, 255, 255, 0.95)",
+              background:
+                "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 50%, rgba(255, 255, 255, 0.9) 100%)",
               backdropFilter: "blur(20px)",
-              boxShadow: "0 25px 50px -12px rgba(135, 126, 242, 0.25)",
+              boxShadow:
+                "0 25px 50px -12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(209, 213, 219, 0.2)",
+              borderColor: "rgba(209, 213, 219, 0.3)",
             }}
           >
+            {/* Animated glow effect - light */}
+            <div
+              className="absolute inset-0 rounded-3xl opacity-20 animate-pulse"
+              style={{
+                background:
+                  "linear-gradient(45deg, transparent, rgba(209, 213, 219, 0.1), transparent)",
+                animationDuration: "4s",
+              }}
+            ></div>
+
             {/* Modal Header */}
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-800">
+            <div className="flex items-center justify-between mb-6 relative z-10">
+              <h3 className="text-2xl font-bold text-black drop-shadow-lg">
                 Verify Your Email
               </h3>
               <button
                 onClick={closeOtpModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                className="text-gray-600 hover:text-black transition-all duration-300 p-1 hover:scale-110 hover:rotate-90"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Modal Content */}
-            <div className="space-y-6">
+            <div className="space-y-6 relative z-10">
               <div className="text-center">
                 <div
-                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                  style={{ background: "rgba(135, 126, 242, 0.1)" }}
+                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse border-2"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, rgba(209, 213, 219, 0.2) 0%, rgba(209, 213, 219, 0.1) 100%)",
+                    borderColor: "rgba(209, 213, 219, 0.3)",
+                    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)",
+                  }}
                 >
-                  <Mail className="w-8 h-8" style={{ color: "#877ef2" }} />
+                  <Mail className="w-8 h-8 text-gray-700 drop-shadow-lg" />
                 </div>
-                <p className="text-gray-600">
+                <p className="text-gray-700">
                   We've sent a verification code to
                 </p>
-                <p className="font-semibold text-gray-800 mt-1">{userEmail}</p>
+                <p className="font-semibold text-black mt-1 drop-shadow-lg">
+                  {userEmail}
+                </p>
               </div>
 
               {/* OTP Input */}
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700 block">
+                <label className="text-sm font-medium text-gray-300 block">
                   Enter 6-digit code
                 </label>
                 <input
@@ -569,14 +635,17 @@ export default function RegistrationPage() {
                   onChange={handleOtpChange}
                   placeholder="000000"
                   maxLength="8"
-                  className={`w-full px-4 py-3 text-center text-2xl font-mono rounded-2xl border-2 focus:outline-none focus:ring-4 transition-all duration-300 ${
+                  className={`w-full px-4 py-3 text-center text-2xl font-mono rounded-2xl border-2 focus:outline-none focus:ring-4 transition-all duration-300 text-white placeholder-gray-500 hover:scale-[1.02] focus:scale-[1.02] ${
                     otpError
                       ? "border-red-400/60 focus:ring-red-400/20"
-                      : "border-purple-200 focus:border-purple-400 focus:ring-purple-400/30"
+                      : "border-white/20 focus:border-white/40 focus:ring-white/20"
                   }`}
                   style={{
-                    background: "rgba(255, 255, 255, 0.8)",
-                    letterSpacing: "0.2em",
+                    background:
+                      "linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(31, 31, 31, 0.9) 100%)",
+                    letterSpacing: "0.3em",
+                    boxShadow:
+                      "inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(255, 255, 255, 0.05)",
                   }}
                 />
                 {otpError && (
