@@ -1,10 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
 import Image from "next/image";
 import { Lock, Eye, EyeOff, Shield, Zap, ArrowRight } from "lucide-react";
 
-export default function page() {
+export default function Page() {
   const [password, setpassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
