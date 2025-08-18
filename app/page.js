@@ -529,8 +529,8 @@ const HomePage = () => {
                 Top Rated
               </h3>
               <p className="text-gray-600 leading-relaxed">
-                Join thousands of satisfied travelers who've rated us 4.9/5 for
-                safety, reliability, and experience.
+                Join thousands of satisfied travelers who have rated us 4.9/5
+                for safety, reliability, and experience.
               </p>
             </div>
 
@@ -649,7 +649,7 @@ const HomePage = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-            Join thousands of travelers who've discovered the joy of shared
+            Join thousands of travelers who have discovered the joy of shared
             journeys. Your next adventure is just one click away.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -617,7 +617,7 @@ export default function RegistrationPage() {
                   <Mail className="w-8 h-8 text-gray-700 drop-shadow-lg" />
                 </div>
                 <p className="text-gray-700">
-                  We've sent a verification code to
+                  We have sent a verification code to
                 </p>
                 <p className="font-semibold text-black mt-1 drop-shadow-lg">
                   {userEmail}
@@ -683,7 +683,7 @@ export default function RegistrationPage() {
                   }}
                   className="w-full py-2 px-4 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
                 >
-                  Didn't receive code? Resend
+                  Did not receive code? Resend
                 </button>
               </div>
             </div>

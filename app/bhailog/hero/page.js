@@ -150,7 +150,7 @@ export default function DashboardPage() {
             Dashboard Overview
           </h1>
           <p className="text-cyan-200 text-lg">
-            Monitor your platform's key metrics and performance
+            Monitor your platform keys key metrics and performance
           </p>
 
           {error && (
