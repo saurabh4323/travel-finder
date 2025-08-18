@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Image from "next/image";
 import { Lock, Eye, EyeOff, Shield, Zap, ArrowRight } from "lucide-react";
