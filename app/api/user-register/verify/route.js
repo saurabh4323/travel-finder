@@ -4,8 +4,7 @@ import { NextResponse } from "next/server";
 // Use environment variables for security and flexibility
 const resendApiKey =
   process.env.RESEND_API_KEY || "re_GYPMdxgQ_LJV5fXhh2Jy2dKUbf35HkT2F";
-const defaultFrom =
-  process.env.EMAIL_FROM || "Sustainability@codelesspages.info";
+const defaultFrom = process.env.EMAIL_FROM || "roamtogether@codelesspages.info";
 const resend = new Resend(resendApiKey);
 
 export async function POST(request) {
