@@ -3,6 +3,7 @@ import connectdb from "@/config/Db";
 import UserSchemasave from "@/modal/user";
 
 export async function POST(request) {
+  connectdb();
   try {
     const { email, OTP } = await request.json();
     console.log(OTP, email);
