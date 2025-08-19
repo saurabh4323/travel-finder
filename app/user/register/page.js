@@ -9,6 +9,12 @@ import {
   Lock,
   Calendar,
   X,
+  Car,
+  Users,
+  MapPin,
+  Shield,
+  Clock,
+  Star,
 } from "lucide-react";
 
 export default function RegistrationPage() {
@@ -56,7 +62,7 @@ export default function RegistrationPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e?.preventDefault && e.preventDefault();
 
     if (!validateForm()) return;
 
@@ -168,465 +174,504 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div
-      className="min-h-screen relative overflow-hidden flex items-center justify-center p-6"
-      style={{
-        background:
-          "radial-gradient(ellipse at top, #f5f5f5 0%, #ffffff 50%, #fafafa 100%)",
-      }}
-    >
-      {/* Animated Background Elements - Light tones */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Main gradient orbs - light */}
-        <div
-          className="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl animate-pulse opacity-15"
-          style={{
-            background:
-              "linear-gradient(135deg, #d1d5db 0%, #e5e7eb 50%, #f3f4f6 100%)",
-            animationDuration: "6s",
-          }}
-        ></div>
-        <div
-          className="absolute -bottom-40 -right-40 w-80 h-80 rounded-full blur-3xl animate-pulse opacity-12"
-          style={{
-            background:
-              "linear-gradient(135deg, #c1c7cd 0%, #e5e7eb 50%, #f3f4f6 100%)",
-            animationDelay: "2s",
-            animationDuration: "8s",
-          }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl animate-pulse opacity-8"
-          style={{
-            background:
-              "linear-gradient(135deg, #e5e7eb 0%, #f3f4f6 25%, #f9fafb 50%, #ffffff 100%)",
-            animationDelay: "1s",
-            animationDuration: "10s",
-          }}
-        ></div>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Left Side - Registration Form */}
+      <div className="flex-1 flex items-center justify-center p-8 lg:p-12 overflow-y-auto">
+        <div className="w-full max-w-2xl">
+          {/* Mobile Logo */}
+          <div className="lg:hidden flex items-center justify-center space-x-3 mb-8">
+            <div className="bg-black p-3 rounded-xl">
+              <Car size={24} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-black">Roam Together</h1>
+          </div>
 
-        {/* Floating elements - light */}
-        <div
-          className="absolute top-20 right-20 w-32 h-32 rounded-full blur-2xl animate-bounce opacity-20"
-          style={{
-            background: "linear-gradient(45deg, #d1d5db 0%, #e5e7eb 100%)",
-            animationDelay: "3s",
-            animationDuration: "4s",
-          }}
-        ></div>
-        <div
-          className="absolute bottom-32 left-32 w-40 h-40 rounded-full blur-2xl animate-bounce opacity-15"
-          style={{
-            background: "linear-gradient(225deg, #e5e7eb 0%, #f3f4f6 100%)",
-            animationDelay: "5s",
-            animationDuration: "5s",
-          }}
-        ></div>
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Join Our Platform
+            </h2>
+            <p className="text-gray-600">Create your account to get started</p>
+          </div>
 
-        {/* Geometric shapes - light */}
-        <div
-          className="absolute top-1/3 right-1/3 w-24 h-24 rounded-full blur-xl animate-pulse opacity-18"
-          style={{
-            background: "linear-gradient(90deg, #d1d5db 0%, #e5e7eb 100%)",
-            animationDelay: "2.5s",
-            animationDuration: "7s",
-          }}
-        ></div>
-      </div>
-
-      {/* Animated Particles - light */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className="absolute top-1/4 left-1/4 w-2 h-2 bg-gray-300 rounded-full animate-ping opacity-30"
-          style={{
-            animationDelay: "1s",
-            animationDuration: "4s",
-          }}
-        ></div>
-        <div
-          className="absolute top-3/4 right-1/4 w-1 h-1 bg-gray-400 rounded-full animate-ping opacity-25"
-          style={{ animationDelay: "3s", animationDuration: "5s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 right-3/4 w-1.5 h-1.5 bg-gray-300 rounded-full animate-ping opacity-20"
-          style={{
-            animationDelay: "2s",
-            animationDuration: "6s",
-          }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 left-1/3 w-1 h-1 bg-gray-400 rounded-full animate-ping opacity-22"
-          style={{
-            animationDelay: "4s",
-            animationDuration: "7s",
-          }}
-        ></div>
-      </div>
-
-      {/* Floating geometric lines - light */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-20 left-20 w-32 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent opacity-15 animate-pulse"
-          style={{ animationDelay: "1s", animationDuration: "5s" }}
-        ></div>
-        <div
-          className="absolute bottom-40 right-40 w-24 h-0.5 bg-gradient-to-r from-transparent via-gray-400 to-transparent opacity-12 animate-pulse"
-          style={{ animationDelay: "3s", animationDuration: "6s" }}
-        ></div>
-      </div>
-
-      <div
-        className={`relative w-full max-w-2xl transform transition-all duration-1000 z-10 ${
-          mounted ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-        }`}
-      >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1
-            className="text-6xl font-bold mb-6 drop-shadow-2xl tracking-tight animate-pulse"
-            style={{
-              background:
-                "linear-gradient(135deg, #000000 0%, #1f2937 25%, #374151 50%, #4b5563 75%, #6b7280 100%)",
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-              textShadow: "0 0 30px rgba(0, 0, 0, 0.2)",
-              animationDuration: "3s",
-            }}
-          >
-            Join Our Platform
-          </h1>
-          <p
-            className="text-gray-600 text-xl drop-shadow-lg font-light tracking-wide animate-fade-in"
-            style={{
-              textShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-              animationDelay: "0.5s",
-            }}
-          >
-            Create your account to get started
-          </p>
-        </div>
-
-        {/* Form Container */}
-        <div
-          className="backdrop-blur-2xl rounded-3xl p-12 shadow-2xl border transform hover:scale-[1.02] transition-all duration-700 group relative overflow-hidden"
-          style={{
-            background:
-              "linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(248, 249, 250, 0.85) 50%, rgba(255, 255, 255, 0.9) 100%)",
-            borderColor: "rgba(6, 6, 6, 0.63)",
-            boxShadow:
-              "0 25px 50px -12px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(209, 213, 219, 0.2)",
-          }}
-        >
-          {/* Animated border effect - light */}
-          <div
-            className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"
-            style={{
-              background:
-                "linear-gradient(45deg, transparent, rgba(209, 213, 219, 0.2), transparent)",
-              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              maskComposite: "xor",
-              padding: "2px",
-            }}
-          ></div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-            {/* Name Field */}
-            <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
-                <User
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
-                  style={{ color: "#374151" }}
+          <div className="space-y-6">
+            {/* First Row: Name and Email */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Name Field */}
+              <div>
+                <label
+                  htmlFor="name"
+                  className="flex items-center text-sm font-medium text-gray-700 mb-2"
+                >
+                  <User size={16} className="mr-2" />
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  placeholder="Enter your full name"
+                  required
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 ${
+                    errors.name ? "border-red-400 focus:ring-red-400" : ""
+                  }`}
                 />
-                Full Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
-                  errors.name
-                    ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
-                }`}
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
-                  border: "1px solid #000",
-                }}
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm animate-pulse">
-                  {errors.name}
-                </p>
-              )}
+                {errors.name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div>
+                <label
+                  htmlFor="email"
+                  className="flex items-center text-sm font-medium text-gray-700 mb-2"
+                >
+                  <Mail size={16} className="mr-2" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 ${
+                    errors.email ? "border-red-400 focus:ring-red-400" : ""
+                  }`}
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                )}
+              </div>
             </div>
 
-            {/* Email Field */}
-            <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
-                <Mail
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
-                  style={{ color: "#374151" }}
+            {/* Second Row: Phone and Age */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Phone Field */}
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="flex items-center text-sm font-medium text-gray-700 mb-2"
+                >
+                  <Phone size={16} className="mr-2" />
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={form.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="Enter your phone number"
+                  required
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 ${
+                    errors.phoneNumber
+                      ? "border-red-400 focus:ring-red-400"
+                      : ""
+                  }`}
                 />
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Enter your email"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
-                  errors.email
-                    ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
-                }`}
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
-                  border: "1px solid #000",
-                }}
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm animate-pulse">
-                  {errors.email}
-                </p>
-              )}
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.phoneNumber}
+                  </p>
+                )}
+              </div>
+
+              {/* Age Field */}
+              <div>
+                <label
+                  htmlFor="age"
+                  className="flex items-center text-sm font-medium text-gray-700 mb-2"
+                >
+                  <Calendar size={16} className="mr-2" />
+                  Age
+                </label>
+                <input
+                  type="number"
+                  id="age"
+                  name="age"
+                  value={form.age}
+                  onChange={handleChange}
+                  placeholder="Enter your age"
+                  min="18"
+                  max="100"
+                  required
+                  className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 ${
+                    errors.age ? "border-red-400 focus:ring-red-400" : ""
+                  }`}
+                />
+                {errors.age && (
+                  <p className="text-red-500 text-sm mt-1">{errors.age}</p>
+                )}
+              </div>
             </div>
 
-            {/* Phone Field */}
-            <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
-                <Phone
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
-                  style={{ color: "#374151" }}
-                />
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                name="phoneNumber"
-                value={form.phoneNumber}
-                onChange={handleChange}
-                placeholder="Enter your phone number"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
-                  errors.phoneNumber
-                    ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
-                }`}
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
-                  border: "1px solid #000",
-                }}
-              />
-              {errors.phoneNumber && (
-                <p className="text-red-500 text-sm animate-pulse">
-                  {errors.phoneNumber}
-                </p>
-              )}
-            </div>
-
-            {/* Age Field */}
-            <div className="space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
-                <Calendar
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
-                  style={{ color: "#374151" }}
-                />
-                Age
-              </label>
-              <input
-                type="number"
-                name="age"
-                value={form.age}
-                onChange={handleChange}
-                placeholder="Enter your age"
-                min="18"
-                max="100"
-                className={`w-full px-5 py-4 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
-                  errors.age
-                    ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                    : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
-                }`}
-                style={{
-                  background:
-                    "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
-                  border: "1px solid #000",
-                }}
-              />
-              {errors.age && (
-                <p className="text-red-500 text-sm animate-pulse">
-                  {errors.age}
-                </p>
-              )}
-            </div>
-
-            {/* Password Field - Full Width */}
-            <div className="md:col-span-2 space-y-3 group">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-3 group-hover:text-black transition-all duration-300 tracking-wide">
-                <Lock
-                  className="w-5 h-5 group-hover:scale-110 transition-all duration-300 drop-shadow-lg"
-                  style={{ color: "#374151" }}
-                />
+            {/* Third Row: Password (Full Width) */}
+            <div>
+              <label
+                htmlFor="password"
+                className="flex items-center text-sm font-medium text-gray-700 mb-2"
+              >
+                <Lock size={16} className="mr-2" />
                 Password
               </label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="password"
                   name="password"
                   value={form.password}
                   onChange={handleChange}
                   placeholder="Create a strong password"
-                  className={`w-full px-5 py-4 pr-14 rounded-2xl backdrop-blur-sm border-2 text-black placeholder-gray-500 focus:outline-none focus:ring-4 transition-all duration-500 transform hover:scale-[1.02] focus:scale-[1.02] hover:shadow-2xl ${
-                    errors.password
-                      ? "border-red-400/60 focus:ring-red-400/20 animate-pulse"
-                      : "border-gray-300/40 focus:border-gray-400/60 focus:ring-gray-400/20"
+                  required
+                  className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all duration-200 placeholder-gray-400 ${
+                    errors.password ? "border-red-400 focus:ring-red-400" : ""
                   }`}
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(248, 249, 250, 0.8) 100%)",
-                    border: "1px solid #000",
-                  }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 transition-all duration-300 hover:scale-125 text-gray-600 opacity-70 hover:opacity-100"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-6 h-6" />
-                  ) : (
-                    <Eye className="w-6 h-6" />
-                  )}
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
               {errors.password && (
-                <p className="text-red-500 text-sm animate-pulse">
-                  {errors.password}
-                </p>
+                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
               )}
             </div>
 
-            {/* Submit Button - Full Width */}
-            <div className="md:col-span-2">
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="w-full py-5 px-8 text-white font-bold text-lg rounded-2xl transition-all duration-500 transform hover:scale-105 hover:rotate-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:rotate-0 shadow-2xl relative overflow-hidden group"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #1f2937 0%, #374151 25%, #4b5563 50%, #6b7280 75%, #9ca3af 100%)",
-                  border: "1px solid #000",
-                }}
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading}
+              className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                  Creating Account...
+                </div>
+              ) : (
+                "Create Account"
+              )}
+            </button>
+          </div>
+
+          {/* Sign In Link */}
+          <p className="text-center text-gray-600 mt-8">
+            Already have an account?{" "}
+            <button
+              type="button"
+              className="text-black hover:underline font-semibold"
+              onClick={() => {
+                window.location.href = "/user/login";
+
+                console.log("Navigate to login page");
+              }}
+            >
+              Sign in here
+            </button>
+          </p>
+
+          {/* Terms */}
+          <p className="text-center text-xs text-gray-500 mt-6">
+            By creating an account, you agree to our{" "}
+            <button className="hover:underline">Terms of Service</button> and{" "}
+            <button className="hover:underline">Privacy Policy</button>
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side - Custom Designed Visual Section */}
+      <div className="hidden lg:flex lg:flex-1 bg-black relative overflow-hidden">
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-800"></div>
+
+          {/* Custom SVG Road Pattern */}
+          <svg
+            className="absolute inset-0 w-full h-full opacity-10"
+            viewBox="0 0 400 600"
+          >
+            <defs>
+              <pattern
+                id="roadPattern"
+                x="0"
+                y="0"
+                width="100"
+                height="100"
+                patternUnits="userSpaceOnUse"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-600/30 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                {isLoading ? (
-                  <div className="flex items-center justify-center gap-3 relative z-10">
-                    <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Creating Account...
-                  </div>
-                ) : (
-                  <span className="relative z-10 drop-shadow-lg">
-                    Create Account
-                  </span>
-                )}
-              </button>
+                <path
+                  d="M50,0 L50,100"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeDasharray="10,10"
+                  opacity="0.3"
+                />
+              </pattern>
+            </defs>
+            <rect width="400" height="600" fill="url(#roadPattern)" />
+
+            {/* Curved Roads */}
+            <path
+              d="M0,100 Q200,150 400,200"
+              stroke="white"
+              strokeWidth="3"
+              fill="none"
+              opacity="0.2"
+              strokeDasharray="15,15"
+            />
+            <path
+              d="M0,300 Q150,250 300,300 Q350,320 400,350"
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+              opacity="0.15"
+              strokeDasharray="10,10"
+            />
+            <path
+              d="M0,500 Q100,450 200,500 Q300,550 400,520"
+              stroke="white"
+              strokeWidth="2"
+              fill="none"
+              opacity="0.1"
+              strokeDasharray="8,8"
+            />
+          </svg>
+
+          {/* Floating Elements */}
+          <div className="absolute top-20 left-16 w-4 h-4 bg-white rounded-full opacity-20 animate-pulse"></div>
+          <div
+            className="absolute top-40 right-20 w-6 h-6 bg-white rounded-full opacity-15 animate-pulse"
+            style={{ animationDelay: "1s" }}
+          ></div>
+          <div
+            className="absolute bottom-32 left-1/3 w-3 h-3 bg-white rounded-full opacity-25 animate-pulse"
+            style={{ animationDelay: "2s" }}
+          ></div>
+          <div
+            className="absolute top-1/2 right-1/4 w-5 h-5 bg-white rounded-full opacity-10 animate-pulse"
+            style={{ animationDelay: "3s" }}
+          ></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col justify-center items-center text-white p-12 w-full">
+          {/* Logo/Brand */}
+          <div className="flex items-center space-x-4 mb-12">
+            <div className="relative">
+              <div className="bg-white p-4 rounded-2xl">
+                <Car size={32} className="text-black" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold">Roam Together</h1>
+              <p className="text-gray-400 text-sm">Ride • Share • Connect</p>
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-gray-600 text-sm font-light">
-              Already have an account?{" "}
-              <button className="font-medium text-gray-800 transition-all duration-300 hover:scale-110 inline-block transform hover:text-black underline decoration-gray-400/30 hover:decoration-gray-600/60">
-                Sign in here
-              </button>
-            </p>
-          </div>
-        </div>
+          {/* Custom Journey Creation Illustration */}
+          <div className="relative mb-12">
+            <div className="w-80 h-72 relative">
+              {/* Registration Process Visual */}
+              <div className="absolute top-0 w-full">
+                {/* Step indicators */}
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                      <User size={20} className="text-white" />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Sign Up</p>
+                  </div>
+                  <div className="flex-1 h-1 bg-gray-700 mx-4 relative">
+                    <div
+                      className="absolute inset-0 bg-blue-500 rounded animate-pulse"
+                      style={{ width: "50%" }}
+                    ></div>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Shield size={20} className="text-white" />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Verify</p>
+                  </div>
+                  <div className="flex-1 h-1 bg-gray-700 mx-4"></div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 bg-gray-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Car size={20} className="text-white" />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">Start</p>
+                  </div>
+                </div>
+              </div>
 
-        {/* Bottom Text */}
-        <div className="text-center mt-8">
-          <p className="text-gray-500 text-xs font-light">
-            By creating an account, you agree to our{" "}
-            <button className="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 inline-block transform underline decoration-gray-400 hover:decoration-gray-600">
-              Terms of Service
-            </button>{" "}
-            and{" "}
-            <button className="text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 inline-block transform underline decoration-gray-400 hover:decoration-gray-600">
-              Privacy Policy
-            </button>
-          </p>
+              {/* Community illustration */}
+              <div className="absolute bottom-0 w-full h-40">
+                {/* Road Base */}
+                <div className="absolute bottom-0 w-full h-20 bg-gray-800 rounded-lg"></div>
+                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-3/4 h-1 bg-white opacity-30"></div>
+
+                {/* Multiple cars representing community */}
+                <div className="absolute bottom-16 left-4 transform">
+                  <div className="w-12 h-6 bg-blue-500 rounded-lg relative shadow-lg animate-bounce">
+                    <div className="absolute -top-1 left-1 w-10 h-3 bg-blue-400 rounded-t-lg"></div>
+                    <div className="absolute -bottom-1 left-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                    <div className="absolute -bottom-1 right-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-16 left-1/4 transform">
+                  <div
+                    className="w-12 h-6 bg-green-500 rounded-lg relative shadow-lg animate-bounce"
+                    style={{ animationDelay: "0.3s" }}
+                  >
+                    <div className="absolute -top-1 left-1 w-10 h-3 bg-green-400 rounded-t-lg"></div>
+                    <div className="absolute -bottom-1 left-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                    <div className="absolute -bottom-1 right-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-16 right-1/4 transform">
+                  <div
+                    className="w-12 h-6 bg-purple-500 rounded-lg relative shadow-lg animate-bounce"
+                    style={{ animationDelay: "0.6s" }}
+                  >
+                    <div className="absolute -top-1 left-1 w-10 h-3 bg-purple-400 rounded-t-lg"></div>
+                    <div className="absolute -bottom-1 left-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                    <div className="absolute -bottom-1 right-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-16 right-4 transform">
+                  <div
+                    className="w-12 h-6 bg-orange-500 rounded-lg relative shadow-lg animate-bounce"
+                    style={{ animationDelay: "0.9s" }}
+                  >
+                    <div className="absolute -top-1 left-1 w-10 h-3 bg-orange-400 rounded-t-lg"></div>
+                    <div className="absolute -bottom-1 left-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                    <div className="absolute -bottom-1 right-0.5 w-2 h-2 bg-gray-800 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Connection lines between cars */}
+              <svg
+                className="absolute inset-0 w-full h-full"
+                viewBox="0 0 320 280"
+              >
+                <path
+                  d="M60,200 Q120,180 180,200"
+                  stroke="white"
+                  strokeWidth="1"
+                  fill="none"
+                  opacity="0.3"
+                  strokeDasharray="3,3"
+                >
+                  <animate
+                    attributeName="stroke-dashoffset"
+                    values="0;-12"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+                <path
+                  d="M120,200 Q180,180 240,200"
+                  stroke="white"
+                  strokeWidth="1"
+                  fill="none"
+                  opacity="0.3"
+                  strokeDasharray="3,3"
+                >
+                  <animate
+                    attributeName="stroke-dashoffset"
+                    values="0;-12"
+                    dur="2.5s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+                <path
+                  d="M180,200 Q240,180 300,200"
+                  stroke="white"
+                  strokeWidth="1"
+                  fill="none"
+                  opacity="0.3"
+                  strokeDasharray="3,3"
+                >
+                  <animate
+                    attributeName="stroke-dashoffset"
+                    values="0;-12"
+                    dur="3s"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              </svg>
+            </div>
+          </div>
+
+          {/* Feature Cards */}
+          <div className="grid grid-cols-3 gap-3 w-full max-w-md">
+            <div className="bg-white bg-opacity-5 backdrop-blur-sm p-3 rounded-xl text-center border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+              <div className="w-8 h-8 bg-blue-500 bg-opacity-80 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Shield size={14} className="text-white" />
+              </div>
+              <p className="text-xs text-gray-300 font-medium">Secure</p>
+            </div>
+
+            <div className="bg-white bg-opacity-5 backdrop-blur-sm p-3 rounded-xl text-center border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+              <div className="w-8 h-8 bg-green-500 bg-opacity-80 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Clock size={14} className="text-white" />
+              </div>
+              <p className="text-xs text-gray-300 font-medium">24/7</p>
+            </div>
+
+            <div className="bg-white bg-opacity-5 backdrop-blur-sm p-3 rounded-xl text-center border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+              <div className="w-8 h-8 bg-yellow-500 bg-opacity-80 rounded-full flex items-center justify-center mx-auto mb-2">
+                <Star size={14} className="text-white" />
+              </div>
+              <p className="text-xs text-gray-300 font-medium">Rated</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* OTP Verification Modal */}
       {showOtpModal && (
-        <div className="fixed inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center p-4 z-50">
-          <div
-            className="rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform scale-100 animate-in border relative overflow-hidden group"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.95) 50%, rgba(255, 255, 255, 0.9) 100%)",
-              backdropFilter: "blur(20px)",
-              boxShadow:
-                "0 25px 50px -12px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(209, 213, 219, 0.2)",
-              borderColor: "rgba(209, 213, 219, 0.3)",
-            }}
-          >
-            {/* Animated glow effect - light */}
-            <div
-              className="absolute inset-0 rounded-3xl opacity-20 animate-pulse"
-              style={{
-                background:
-                  "linear-gradient(45deg, transparent, rgba(209, 213, 219, 0.1), transparent)",
-                animationDuration: "4s",
-              }}
-            ></div>
-
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between mb-6 relative z-10">
-              <h3 className="text-2xl font-bold text-black drop-shadow-lg">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-black">
                 Verify Your Email
               </h3>
               <button
                 onClick={closeOtpModal}
-                className="text-gray-600 hover:text-black transition-all duration-300 p-1 hover:scale-110 hover:rotate-90"
+                className="text-gray-600 hover:text-black transition-all duration-300 p-1 hover:scale-110"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Modal Content */}
-            <div className="space-y-6 relative z-10">
+            <div className="space-y-6">
               <div className="text-center">
-                <div
-                  className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center animate-pulse border-2"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(209, 213, 219, 0.2) 0%, rgba(209, 213, 219, 0.1) 100%)",
-                    borderColor: "rgba(209, 213, 219, 0.3)",
-                    boxShadow: "0 8px 25px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <Mail className="w-8 h-8 text-gray-700 drop-shadow-lg" />
+                <div className="w-16 h-16 bg-black rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <Mail className="w-8 h-8 text-white" />
                 </div>
                 <p className="text-gray-700">
                   We have sent a verification code to
                 </p>
-                <p className="font-semibold text-black mt-1 drop-shadow-lg">
-                  {userEmail}
-                </p>
+                <p className="font-semibold text-black mt-1">{userEmail}</p>
               </div>
 
               {/* OTP Input */}
               <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-300 block">
+                <label className="text-sm font-medium text-gray-700 block">
                   Enter 6-digit code
                 </label>
                 <input
@@ -634,25 +679,14 @@ export default function RegistrationPage() {
                   value={otp}
                   onChange={handleOtpChange}
                   placeholder="000000"
-                  maxLength="8"
-                  className={`w-full px-4 py-3 text-center text-2xl font-mono rounded-2xl border-2 focus:outline-none focus:ring-4 transition-all duration-300 text-white placeholder-gray-500 hover:scale-[1.02] focus:scale-[1.02] ${
+                  maxLength="6"
+                  className={`w-full px-4 py-3 text-center text-2xl font-mono rounded-lg border-2 focus:outline-none focus:ring-4 transition-all duration-300 ${
                     otpError
-                      ? "border-red-400/60 focus:ring-red-400/20"
-                      : "border-white/20 focus:border-white/40 focus:ring-white/20"
+                      ? "border-red-400 focus:ring-red-400/20"
+                      : "border-gray-300 focus:border-black focus:ring-black/20"
                   }`}
-                  style={{
-                    background:
-                      "linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(31, 31, 31, 0.9) 100%)",
-                    letterSpacing: "0.3em",
-                    boxShadow:
-                      "inset 0 2px 10px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(255, 255, 255, 0.05)",
-                  }}
                 />
-                {otpError && (
-                  <p className="text-red-400 text-sm animate-pulse">
-                    {otpError}
-                  </p>
-                )}
+                {otpError && <p className="text-red-500 text-sm">{otpError}</p>}
               </div>
 
               {/* Action Buttons */}
@@ -660,11 +694,7 @@ export default function RegistrationPage() {
                 <button
                   onClick={handleOtpVerification}
                   disabled={isVerifying || otp.length !== 6}
-                  className="w-full py-3 px-6 text-white font-semibold rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #877ef2 0%, #6366f1 50%, #4f46e5 100%)",
-                  }}
+                  className="w-full py-3 px-6 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isVerifying ? (
                     <div className="flex items-center justify-center gap-2">
@@ -681,7 +711,7 @@ export default function RegistrationPage() {
                     // Here you could add resend OTP functionality
                     alert("Resend functionality would be implemented here");
                   }}
-                  className="w-full py-2 px-4 text-gray-600 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+                  className="w-full py-2 px-4 text-gray-600 font-medium rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   Did not receive code? Resend
                 </button>

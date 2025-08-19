@@ -107,16 +107,13 @@ const HomePage = () => {
               </a>
             </nav>
             <div className="flex space-x-3">
-              <button className="px-5 py-2 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors font-medium">
-                Log in
-              </button>
               <button
                 className="px-5 py-2 bg-gradient-to-r from-amber-500 to-rose-600 text-white rounded-xl hover:shadow-xl transform hover:-translate-y-0.5 transition-all font-medium"
                 onClick={() => {
-                  window.location.href = "/user/register";
+                  window.location.href = "/user/login";
                 }}
               >
-                Sign up
+                Register
               </button>
             </div>
           </div>
@@ -124,29 +121,32 @@ const HomePage = () => {
       </header>
 
       {/* Hero Section - Split 60/40 */}
-      <section className="relative overflow-hidden py-20 lg:py-32">
+      <section
+        className="relative overflow-hidden py-20 lg:py-32"
+        style={{ backgroundColor: "#fffef9" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-5 gap-12 items-center">
             {/* Left Content - 60% */}
             <div className="lg:col-span-3">
               <div className="relative">
-                <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-6xl lg:text-7xl font-bold text-black mb-6 leading-tight">
                   Go anywhere with
-                  <span className="block bg-gradient-to-r from-amber-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-gray-900 via-black to-gray-800 bg-clip-text text-transparent">
                     Trippy
                   </span>
                 </h1>
-                <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-rose-500 rounded-full mb-6"></div>
-                <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                <div className="w-24 h-1 bg-gradient-to-r from-gray-800 to-black rounded-full mb-6"></div>
+                <p className="text-xl text-gray-700 mb-8 leading-relaxed">
                   Connect with verified travelers, share memorable journeys, and
                   explore the world together while saving money and making new
                   friends.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <button className="px-8 py-4 bg-gradient-to-r from-amber-500 to-rose-600 text-white rounded-xl text-lg font-semibold hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                  <button className="px-8 py-4 bg-black text-white rounded-xl text-lg font-semibold hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 hover:bg-gray-900">
                     Start Your Journey
                   </button>
-                  <button className="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl text-lg font-semibold hover:border-rose-600 hover:text-rose-600 transition-colors">
+                  <button className="px-8 py-4 border-2 border-gray-400 text-gray-800 rounded-xl text-lg font-semibold hover:border-black hover:text-black hover:bg-gray-50 transition-all duration-300">
                     Learn More
                   </button>
                 </div>
@@ -156,27 +156,33 @@ const HomePage = () => {
             {/* Right Image - 40% */}
             <div className="lg:col-span-2">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 to-rose-500/20 rounded-3xl blur-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-400/20 to-gray-600/20 rounded-3xl blur-xl"></div>
                 <img
                   src="/image1.png"
                   alt="Travel Adventure"
                   className="relative w-full h-96 object-cover rounded-3xl shadow-2xl"
                 />
-                {/* <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-xl">
+                <div
+                  className="absolute -bottom-6 -left-6 p-4 rounded-2xl shadow-xl border border-gray-200"
+                  style={{ backgroundColor: "#fffef9" }}
+                >
                   <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-r from-gray-800 to-black rounded-xl flex items-center justify-center">
                       <Award className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">5,000+</p>
+                      <p className="font-semibold text-black">5,000+</p>
                       <p className="text-sm text-gray-600">Happy Travelers</p>
                     </div>
                   </div>
-                </div> */}
-                <div className="absolute -top-6 -right-6 bg-white p-3 rounded-xl shadow-lg">
+                </div>
+                <div
+                  className="absolute -top-6 -right-6 p-3 rounded-xl shadow-lg border border-gray-200"
+                  style={{ backgroundColor: "#fffef9" }}
+                >
                   <div className="flex items-center space-x-2">
-                    <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                    <span className="font-semibold text-gray-900">4.9</span>
+                    <Star className="w-5 h-5 text-gray-800 fill-current" />
+                    <span className="font-semibold text-black">4.9</span>
                   </div>
                 </div>
               </div>
@@ -185,13 +191,12 @@ const HomePage = () => {
         </div>
 
         {/* Floating decorative elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-amber-400 to-rose-400 rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-gray-300 to-gray-500 rounded-full opacity-30 animate-pulse"></div>
         <div
-          className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full opacity-30 animate-pulse"
+          className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full opacity-30 animate-pulse"
           style={{ animationDelay: "1s" }}
         ></div>
       </section>
-
       {/* Services Section */}
       <section id="services" className="py-20 bg-white/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
