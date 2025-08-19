@@ -41,8 +41,8 @@ export async function POST(request) {
     const user = await savetheuser.save();
     const subject = "Your L'Oréal Sustainability Challenge 2025 marks";
 
-    const fromName = "Sustainability@codelesspages.info";
-    await fetch("http://localhost:3000/api/user-register/verify", {
+    const fromName = "RoamTogether@codelesspages.info";
+    await fetch("https://www.roamtogether.online/api/user-register/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
