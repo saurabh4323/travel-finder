@@ -77,7 +77,7 @@ const HomePage = () => {
                 <Car className="w-7 h-7 text-white" />
               </div>
               <span className="text-3xl font-bold bg-gradient-to-r from-amber-600 via-rose-600 to-purple-600 bg-clip-text text-transparent">
-                Trippy
+                Tripy
               </span>
             </div>
             <nav className="hidden md:flex space-x-8">
@@ -132,10 +132,11 @@ const HomePage = () => {
               <div className="relative">
                 <h1 className="text-6xl lg:text-7xl font-bold text-black mb-6 leading-tight">
                   Go anywhere with
-                  <span className="block bg-gradient-to-r from-gray-900 via-black to-gray-800 bg-clip-text text-transparent">
-                    Trippy
+                  <span className="text-6xl font-extrabold bg-gradient-to-r from-amber-600 via-rose-600 to-purple-600 bg-clip-text text-transparent animate-gradient-move">
+                    Tripy
                   </span>
                 </h1>
+
                 <div className="w-24 h-1 bg-gradient-to-r from-gray-800 to-black rounded-full mb-6"></div>
                 <p className="text-xl text-gray-700 mb-8 leading-relaxed">
                   Connect with verified travelers, share memorable journeys, and
