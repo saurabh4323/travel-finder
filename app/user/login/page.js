@@ -35,15 +35,17 @@ export default function LoginPage() {
         },
         body: JSON.stringify(formData),
       });
-      // console.log("clciked 2");
+
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(data.message || "Login failed");
       }
+      console.log(data);
 
       // Handle successful login
-      window.location.href = "/";
+      const loc = await localStorage.setItem("rider", data.data.userToken);
+      window.location.href = "/user/ride";
       // Redirect or handle success as needed
       // router.push('/dashboard');
     } catch (error) {

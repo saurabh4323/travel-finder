@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-const travelSchema = new mongoose.Schema({
-  trvaeltoken: {
+const SecduleSchema = new mongoose.Schema({
+  traveltoken: {
     type: String,
   },
   userToken: {
-    type: [String],
+    type: String,
     default: null,
   },
   source: {
@@ -24,14 +24,11 @@ const travelSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-
-  driverReview: {
-    type: Number,
-  },
 });
 
-const travelSchemaSave =
-  mongoose.models.travelSchema ||
-  mongoose.model("travelSchemasave", travelSchema);
+// 👇 Keep model name consistent everywhere
+const SecduleSchemaSave =
+  mongoose.models.SecduleSchemasave ||
+  mongoose.model("SecduleSchemasave", SecduleSchema);
 
-export default travelSchemaSave;
+export default SecduleSchemaSave;
