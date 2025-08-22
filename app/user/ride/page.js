@@ -1,644 +1,359 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   Users,
-  Search,
   ArrowRight,
   Star,
-  Shield,
   Clock,
   Calendar,
-  X,
   Loader2,
-  Navigation,
+  Phone,
+  User,
+  Mail,
 } from "lucide-react";
 
-// Location Input Component with Dynamic Location Detection
-function LocationInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  inputId,
-  showCurrentLocation = false,
-}) {
-  const [suggestions, setSuggestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [activeSuggestion, setActiveSuggestion] = useState(-1);
-  const [recentLocations, setRecentLocations] = useState([]);
-  const [userLocation, setUserLocation] = useState(null);
-  const [locationError, setLocationError] = useState(null);
+const UserCard = ({ user, onAccept, onReject }) => {
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const inputRef = useRef(null);
-  const abortControllerRef = useRef(null);
-  const debounceTimerRef = useRef(null);
-  const lastQueryRef = useRef("");
-
-  // Get user's current location
-  const getCurrentLocation = useCallback(() => {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error("Geolocation not supported"));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lon: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-          };
-          setUserLocation(location);
-          setLocationError(null);
-          resolve(location);
-        },
-        (error) => {
-          let errorMessage = "Location access denied";
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "Location access denied by user";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information unavailable";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "Location request timed out";
-              break;
-          }
-          setLocationError(errorMessage);
-          reject(new Error(errorMessage));
-        },
-        {
-          timeout: 15000,
-          enableHighAccuracy: true,
-          maximumAge: 300000, // 5 minutes cache
-        }
-      );
-    });
-  }, []);
-
-  // Initialize user location on component mount
-  useEffect(() => {
-    const initializeLocation = async () => {
-      try {
-        await getCurrentLocation();
-      } catch (error) {
-        console.log("Could not get initial location:", error.message);
-      }
-    };
-
-    initializeLocation();
-  }, [getCurrentLocation]);
-
-  // Enhanced Nominatim search with location bias
-  const searchLocationsNominatim = useCallback(
-    async (query, userLoc = null) => {
-      try {
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-
-        let url =
-          `https://nominatim.openstreetmap.org/search?` +
-          `format=json&addressdetails=1&limit=10&` +
-          `q=${encodeURIComponent(query)}&` +
-          `accept-language=en`;
-
-        // Add location bias if available
-        if (userLoc) {
-          url += `&lat=${userLoc.lat}&lon=${userLoc.lon}`;
-          const latDelta = 0.45;
-          const lonDelta = 0.45;
-          url += `&viewbox=${userLoc.lon - lonDelta},${
-            userLoc.lat + latDelta
-          },${userLoc.lon + lonDelta},${userLoc.lat - latDelta}`;
-          url += `&bounded=0`; // Don't strictly bound, just prefer
-        }
-
-        const response = await fetch(url, {
-          signal: controller.signal,
-          headers: {
-            "User-Agent": "RoamTogether/1.0 (https://roamtogether.com)",
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        return data
-          .filter((item) => {
-            // Basic quality filters
-            if (!item.lat || !item.lon || !item.display_name) return false;
-
-            // Filter by importance score
-            if (item.importance && item.importance < 0.1) return false;
-
-            return true;
-          })
-          .map((item, index) => {
-            const address = item.address || {};
-            const displayParts = item.display_name
-              .split(",")
-              .map((part) => part.trim());
-
-            // Calculate distance if user location available
-            let distance = null;
-            if (userLoc) {
-              const lat1 = userLoc.lat;
-              const lon1 = userLoc.lon;
-              const lat2 = parseFloat(item.lat);
-              const lon2 = parseFloat(item.lon);
-
-              const R = 6371; // Earth's radius in km
-              const dLat = ((lat2 - lat1) * Math.PI) / 180;
-              const dLon = ((lon2 - lon1) * Math.PI) / 180;
-              const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos((lat1 * Math.PI) / 180) *
-                  Math.cos((lat2 * Math.PI) / 180) *
-                  Math.sin(dLon / 2) *
-                  Math.sin(dLon / 2);
-              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-              distance = R * c;
-            }
-
-            return {
-              id: `nominatim-${item.place_id}`,
-              display_name: item.display_name,
-              name: displayParts[0] || item.name,
-              type: item.type || item.class || "location",
-              address: item.display_name,
-              lat: parseFloat(item.lat),
-              lon: parseFloat(item.lon),
-              country: address.country,
-              state: address.state,
-              city: address.city || address.town || address.village,
-              importance: item.importance || 0,
-              distance: distance,
-              source: "nominatim",
-            };
-          })
-          .sort((a, b) => {
-            // Sort by relevance: importance first, then distance if available
-            if (userLoc && a.distance !== null && b.distance !== null) {
-              // If importance is similar, prefer closer locations
-              const importanceDiff = Math.abs(a.importance - b.importance);
-              if (importanceDiff < 0.1) {
-                return a.distance - b.distance;
-              }
-            }
-            return b.importance - a.importance;
-          })
-          .slice(0, 8);
-      } catch (error) {
-        if (error.name === "AbortError") return [];
-        console.error("Nominatim search error:", error);
-        return [];
-      }
-    },
-    []
-  );
-
-  // MapBox search as fallback
-  const searchLocationsMapbox = useCallback(async (query, userLoc = null) => {
+  const handleAccept = async () => {
+    setIsProcessing(true);
     try {
-      const controller = new AbortController();
-      abortControllerRef.current = controller;
-
-      let url =
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          query
-        )}.json?` +
-        `access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw&` +
-        `limit=8&types=place,locality,neighborhood,address,poi`;
-
-      if (userLoc) {
-        url += `&proximity=${userLoc.lon},${userLoc.lat}`;
-      }
-
-      const response = await fetch(url, {
-        signal: controller.signal,
-      });
-
-      if (!response.ok) throw new Error(`MapBox API error: ${response.status}`);
-
-      const data = await response.json();
-
-      return (
-        data.features?.map((item) => ({
-          id: `mapbox-${item.id}`,
-          display_name: item.place_name,
-          name: item.text,
-          type: item.place_type?.[0] || "location",
-          address: item.place_name,
-          lat: item.center[1],
-          lon: item.center[0],
-          country: item.context?.find((c) => c.id.startsWith("country"))?.text,
-          state: item.context?.find((c) => c.id.startsWith("region"))?.text,
-          city: item.context?.find((c) => c.id.startsWith("place"))?.text,
-          relevance: item.relevance || 0,
-          source: "mapbox",
-        })) || []
-      );
+      if (onAccept) await onAccept(user);
     } catch (error) {
-      if (error.name === "AbortError") return [];
-      console.error("MapBox search error:", error);
-      return [];
-    }
-  }, []);
-
-  // Main search function with improved logic
-  const searchLocations = useCallback(
-    async (query) => {
-      if (!query || query.trim().length < 2) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-        return;
-      }
-
-      // Prevent duplicate searches
-      if (lastQueryRef.current === query.trim()) {
-        return;
-      }
-      lastQueryRef.current = query.trim();
-
-      setIsLoading(true);
-
-      try {
-        let allResults = [];
-
-        // Try Nominatim first (better for detailed addresses)
-        const nominatimResults = await searchLocationsNominatim(
-          query,
-          userLocation
-        );
-        allResults = [...nominatimResults];
-
-        // If we don't have enough results, try MapBox
-        if (allResults.length < 3) {
-          const mapboxResults = await searchLocationsMapbox(
-            query,
-            userLocation
-          );
-
-          // Merge results, avoiding duplicates
-          const existingNames = new Set(
-            allResults.map((r) => r.display_name.toLowerCase())
-          );
-          const newResults = mapboxResults.filter(
-            (r) => !existingNames.has(r.display_name.toLowerCase())
-          );
-
-          allResults = [...allResults, ...newResults];
-        }
-
-        // Add recent locations if query is short and we have few results
-        if (query.trim().length <= 3 && allResults.length < 5) {
-          const matchingRecent = recentLocations
-            .filter(
-              (loc) =>
-                loc.name.toLowerCase().includes(query.toLowerCase()) ||
-                loc.display_name.toLowerCase().includes(query.toLowerCase())
-            )
-            .map((loc) => ({ ...loc, isRecent: true }));
-
-          allResults = [...matchingRecent, ...allResults];
-        }
-
-        // Remove duplicates and limit
-        const uniqueResults = allResults
-          .filter(
-            (result, index, self) =>
-              index ===
-              self.findIndex(
-                (r) =>
-                  Math.abs(r.lat - result.lat) < 0.001 &&
-                  Math.abs(r.lon - result.lon) < 0.001
-              )
-          )
-          .slice(0, 8);
-
-        setSuggestions(uniqueResults);
-        setShowSuggestions(uniqueResults.length > 0);
-      } catch (error) {
-        console.error("Location search error:", error);
-        setSuggestions([]);
-        setShowSuggestions(false);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [
-      userLocation,
-      recentLocations,
-      searchLocationsNominatim,
-      searchLocationsMapbox,
-    ]
-  );
-
-  // Debounced search effect
-  useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    debounceTimerRef.current = setTimeout(() => {
-      searchLocations(value);
-    }, 300);
-
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [value, searchLocations]);
-
-  // Save location to recent (in memory)
-  const saveRecentLocation = useCallback((location) => {
-    setRecentLocations((prev) => {
-      const newRecent = [
-        { ...location, isRecent: true },
-        ...prev.filter((loc) => loc.id !== location.id),
-      ].slice(0, 5);
-      return newRecent;
-    });
-  }, []);
-
-  // Use current location handler
-  const handleUseCurrentLocation = async () => {
-    try {
-      setIsLoading(true);
-      const location = await getCurrentLocation();
-
-      // Reverse geocode
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?` +
-          `format=json&lat=${location.lat}&lon=${location.lon}&zoom=18&addressdetails=1`,
-        {
-          headers: {
-            "User-Agent": "RoamTogether/1.0 (https://roamtogether.com)",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.display_name) {
-          const locationText = data.name || data.display_name.split(",")[0];
-          onChange(locationText);
-
-          saveRecentLocation({
-            id: `current-${Date.now()}`,
-            display_name: data.display_name,
-            name: locationText,
-            type: "current_location",
-            lat: location.lat,
-            lon: location.lon,
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Current location error:", error);
-      alert(`Could not get your current location: ${error.message}`);
+      console.error("Error accepting user:", error);
     } finally {
-      setIsLoading(false);
+      setIsProcessing(false);
     }
   };
 
-  // Suggestion selection
-  const handleSuggestionClick = useCallback(
-    (suggestion) => {
-      const locationText =
-        suggestion.name || suggestion.display_name.split(",")[0];
-      onChange(locationText);
-      saveRecentLocation(suggestion);
-      setShowSuggestions(false);
-      setActiveSuggestion(-1);
-      lastQueryRef.current = locationText; // Prevent re-search
-    },
-    [onChange, saveRecentLocation]
-  );
-
-  // Keyboard navigation
-  const handleKeyDown = (e) => {
-    if (!showSuggestions) return;
-
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setActiveSuggestion((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setActiveSuggestion((prev) => (prev > 0 ? prev - 1 : -1));
-        break;
-      case "Enter":
-        e.preventDefault();
-        if (activeSuggestion >= 0 && suggestions[activeSuggestion]) {
-          handleSuggestionClick(suggestions[activeSuggestion]);
-        }
-        break;
-      case "Escape":
-        setShowSuggestions(false);
-        setActiveSuggestion(-1);
-        break;
+  const handleReject = async () => {
+    setIsProcessing(true);
+    try {
+      if (onReject) await onReject(user);
+    } catch (error) {
+      console.error("Error rejecting user:", error);
+    } finally {
+      setIsProcessing(false);
     }
-  };
-
-  // Clear input
-  const clearInput = () => {
-    onChange("");
-    setShowSuggestions(false);
-    setActiveSuggestion(-1);
-    lastQueryRef.current = "";
-    inputRef.current?.focus();
-  };
-
-  // Get location type icon
-  const getLocationIcon = (type, isRecent) => {
-    if (isRecent) return "🕒";
-
-    const iconMap = {
-      current_location: "📍",
-      university: "🎓",
-      school: "🏫",
-      airport: "✈️",
-      hospital: "🏥",
-      hotel: "🏨",
-      restaurant: "🍽️",
-      railway_station: "🚉",
-      bus_stop: "🚌",
-      commercial: "🏢",
-      residential: "🏠",
-      park: "🌳",
-      mall: "🏬",
-    };
-
-    return iconMap[type] || "📍";
   };
 
   return (
-    <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
-      </label>
-
-      <div className="relative">
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => {
-            if (value.trim() && suggestions.length > 0) {
-              setShowSuggestions(true);
-            }
-          }}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          placeholder={placeholder}
-          className="w-full text-black px-4 py-3 pr-12 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
-        />
-
-        {/* Right side icons */}
-        <div className="absolute right-3 top-3.5 flex items-center space-x-1">
-          {isLoading ? (
-            <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
-          ) : value ? (
-            <button
-              onClick={clearInput}
-              className="w-4 h-4 text-gray-400 hover:text-gray-600 transition-colors"
-              type="button"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          ) : (
-            <MapPin className="w-4 h-4 text-gray-400" />
-          )}
-        </div>
-
-        {/* Current location button */}
-        {showCurrentLocation && !value && (
-          <button
-            onClick={handleUseCurrentLocation}
-            disabled={isLoading}
-            className="absolute left-3 top-3 text-xs text-blue-600 hover:text-blue-700 transition-colors flex items-center space-x-1 disabled:opacity-50"
-            type="button"
-          >
-            <Navigation className="w-3 h-3" />
-            <span>Use current location</span>
-          </button>
-        )}
-
-        {/* Error message */}
-        {locationError && showCurrentLocation && (
-          <div className="absolute left-3 bottom-full mb-1 text-xs text-red-600 bg-red-50 px-2 py-1 rounded">
-            {locationError}
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-300">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
+            <User className="w-6 h-6 text-white" />
           </div>
-        )}
-
-        {/* Suggestions dropdown */}
-        {showSuggestions && (
-          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {suggestions.length === 0 && !isLoading ? (
-              <div className="px-4 py-3 text-gray-500 text-sm">
-                No locations found
-              </div>
-            ) : (
-              <>
-                {/* Recent locations header */}
-                {suggestions.some((s) => s.isRecent) && (
-                  <div className="px-4 py-2 text-xs text-gray-500 bg-gray-50 border-b">
-                    Recent locations
-                  </div>
-                )}
-
-                {suggestions.map((suggestion, index) => (
-                  <div
-                    key={suggestion.id}
-                    onClick={() => handleSuggestionClick(suggestion)}
-                    className={`px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0 ${
-                      index === activeSuggestion
-                        ? "bg-blue-50"
-                        : "hover:bg-gray-50"
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <span className="text-lg flex-shrink-0 mt-0.5">
-                        {getLocationIcon(suggestion.type, suggestion.isRecent)}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-900 truncate">
-                          {suggestion.name}
-                        </div>
-                        <div className="text-sm text-gray-500 truncate">
-                          {suggestion.display_name}
-                        </div>
-                        <div className="flex items-center space-x-2 mt-1">
-                          {suggestion.isRecent && (
-                            <span className="text-xs text-blue-600">
-                              Recent
-                            </span>
-                          )}
-                          {suggestion.distance && (
-                            <span className="text-xs text-gray-400">
-                              {suggestion.distance < 1
-                                ? `${Math.round(
-                                    suggestion.distance * 1000
-                                  )}m away`
-                                : `${suggestion.distance.toFixed(1)}km away`}
-                            </span>
-                          )}
-                          {suggestion.source && (
-                            <span className="text-xs text-gray-400">
-                              {suggestion.source}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-
-            {/* Attribution */}
-            <div className="px-4 py-2 text-xs text-gray-400 bg-gray-50 text-center border-t">
-              Powered by OpenStreetMap & MapBox
+          <div>
+            <h3 className="font-semibold text-gray-900 text-lg">
+              {user.name || "Anonymous User"}
+            </h3>
+            <div className="flex items-center space-x-1 text-sm text-gray-500">
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              <span>4.8</span>
             </div>
           </div>
-        )}
+        </div>
+        <div className="flex items-center space-x-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span>Verified</span>
+        </div>
+      </div>
+
+      <div className="space-y-3 mb-6">
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <Phone className="w-4 h-4" />
+          <span>{user.phoneNumber || "Not provided"}</span>
+        </div>
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <Mail className="w-4 h-4" />
+          <span>{user.email || "Not provided"}</span>
+        </div>
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <User className="w-4 h-4" />
+          <span>Age: {user.age || "Not specified"}</span>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-3 pt-4 border-t border-gray-100">
+        <button
+          onClick={handleReject}
+          disabled={isProcessing}
+          className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? (
+            <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+          ) : (
+            "Reject"
+          )}
+        </button>
+        <button
+          onClick={handleAccept}
+          disabled={isProcessing}
+          className="flex-1 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isProcessing ? (
+            <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+          ) : (
+            "Accept"
+          )}
+        </button>
       </div>
     </div>
   );
-}
+};
 
-// Main RoamTogether Component
 export default function RoamTogether() {
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
   const [travelDate, setTravelDate] = useState("");
   const [travelTime, setTravelTime] = useState("");
   const [isScheduled, setIsScheduled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [foundUsers, setFoundUsers] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!fromLocation || !toLocation) {
+      setSubmitError("Please fill in both departure and destination locations");
+      return;
+    }
+
+    if (isScheduled && (!travelDate || !travelTime)) {
+      setSubmitError("Please fill in travel date and time for scheduled trips");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubmitError("");
+    setFoundUsers([]);
+
+    try {
+      // Get user token
+      let userToken;
+      try {
+        const storedToken =
+          typeof window !== "undefined" && window.localStorage
+            ? window.localStorage.getItem("rider")
+            : null;
+        userToken = storedToken || "default-user-token";
+      } catch (error) {
+        userToken = "default-user-token";
+      }
+
+      const requestData = {
+        userToken,
+        fromLocation,
+        toLocation,
+        isScheduled,
+        ...(isScheduled && { travelDate, travelTime }),
+      };
+
+      console.log("Sending travel request:", requestData);
+
+      const response = await fetch("/api/user-travel", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Initial response:", data);
+
+      if (data.message === "congo") {
+        setIsLoadingProfiles(true);
+        setShowResults(true);
+
+        // Fetch user profiles
+        try {
+          console.log("Fetching profile for user token:", data.data);
+
+          const profileResponse = await fetch(
+            `/api/user-profile/${data.data}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            console.log("Profile data received:", profileData);
+
+            // Handle both single user and array of users
+            if (profileData.data) {
+              const users = Array.isArray(profileData.data)
+                ? profileData.data
+                : [profileData.data];
+              setFoundUsers(users);
+              console.log("Setting found users:", users);
+            } else {
+              setFoundUsers([]);
+            }
+          } else {
+            console.error("Profile fetch failed:", profileResponse.status);
+            setFoundUsers([]);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+          setFoundUsers([]);
+        } finally {
+          setIsLoadingProfiles(false);
+        }
+      } else {
+        setFoundUsers([]);
+        setShowResults(true);
+      }
+    } catch (error) {
+      console.error("Submit error:", error);
+      setSubmitError("Failed to find travel companions. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetSearch = () => {
+    setShowResults(false);
+    setFoundUsers([]);
+    setSubmitError("");
+    setIsLoadingProfiles(false);
+  };
+
+  const handleAcceptUser = async (user) => {
+    console.log("Accepting user:", user);
+    // Implement accept logic here
+  };
+
+  const handleRejectUser = async (user) => {
+    console.log("Rejecting user:", user);
+    // Implement reject logic here
+  };
+
+  if (showResults) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <div className="mb-8">
+            <button
+              onClick={resetSearch}
+              className="flex items-center text-gray-600 hover:text-black mb-4 transition-colors"
+            >
+              <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+              Back to search
+            </button>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-black">
+                  {isLoadingProfiles
+                    ? "Finding travel companions..."
+                    : foundUsers.length > 0
+                    ? `Found ${foundUsers.length} travel companion${
+                        foundUsers.length > 1 ? "s" : ""
+                      }`
+                    : "No travel companions found"}
+                </h1>
+                <p className="text-gray-600 mt-2">
+                  {foundUsers.length > 0
+                    ? `Traveling from ${fromLocation} to ${toLocation}`
+                    : isLoadingProfiles
+                    ? "Please wait while we search for companions"
+                    : "Try adjusting your search criteria or check back later"}
+                </p>
+              </div>
+
+              {foundUsers.length > 0 && !isLoadingProfiles && (
+                <div className="text-right">
+                  <div className="text-sm text-gray-500">Sort by</div>
+                  <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <option>Closest match</option>
+                    <option>Highest rated</option>
+                    <option>Nearest location</option>
+                    <option>Departure time</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Loading State */}
+          {isLoadingProfiles && (
+            <div className="flex justify-center items-center py-16">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-black mx-auto mb-4" />
+                <p className="text-gray-600">Loading companion profiles...</p>
+              </div>
+            </div>
+          )}
+
+          {/* Results */}
+          {!isLoadingProfiles && (
+            <>
+              {foundUsers.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {foundUsers.map((user, index) => (
+                    <UserCard
+                      key={user._id || user.userToken || index}
+                      user={user}
+                      onAccept={handleAcceptUser}
+                      onReject={handleRejectUser}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Users className="w-12 h-12 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-black mb-2">
+                    No companions found right now
+                  </h3>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    Do not worry! New travelers join every day. Try creating an
+                    alert or checking back later.
+                  </p>
+                  <div className="flex justify-center space-x-4">
+                    <button className="px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+                      Create Travel Alert
+                    </button>
+                    <button
+                      onClick={resetSearch}
+                      className="px-6 py-3 border border-black text-black rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      Try Different Route
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-[#fffef9]">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Side - Form */}
           <div className="space-y-8">
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-black leading-tight">
                 Find your perfect
                 <span className="text-gray-600"> travel companion</span>
               </h1>
@@ -650,40 +365,49 @@ export default function RoamTogether() {
             </div>
 
             {/* Booking Form */}
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6">
+            <div className="bg-gray-50 rounded-2xl shadow-xl border border-gray-200 p-8 space-y-6">
               <div className="flex items-center space-x-2 mb-6">
                 <MapPin className="w-5 h-5 text-gray-600" />
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-black">
                   Plan your journey
                 </h2>
               </div>
 
-              <div className="space-y-4">
-                <LocationInput
-                  label="From"
-                  value={fromLocation}
-                  onChange={setFromLocation}
-                  placeholder="Enter your starting location"
-                  inputId="from-location"
-                  showCurrentLocation={true}
-                />
+              {submitError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <div className="text-red-800 text-sm">{submitError}</div>
+                </div>
+              )}
 
-                <LocationInput
-                  label="To"
-                  value={toLocation}
-                  onChange={setToLocation}
-                  placeholder="Where are you going?"
-                  inputId="to-location"
-                  showCurrentLocation={false}
-                />
+              <div className="space-y-4">
+                <div className="relative">
+                  <MapPin className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                  <input
+                    id="from-location"
+                    value={fromLocation}
+                    onChange={(e) => setFromLocation(e.target.value)}
+                    placeholder="Enter your starting location"
+                    className="w-full pl-10 text-black pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
+                  />
+                </div>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 absolute left-3 top-3 text-black" />
+                  <input
+                    id="to-location"
+                    value={toLocation}
+                    onChange={(e) => setToLocation(e.target.value)}
+                    placeholder="Where are you going?"
+                    className="w-full pl-10 text-black pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
+                  />
+                </div>
 
                 {/* Travel Time Options */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                  <label className="block text-sm font-medium text-black mb-3">
                     When
                   </label>
 
-                  <div className="flex bg-gray-100 rounded-lg p-1 mb-4">
+                  <div className="flex bg-gray-200 rounded-lg p-1 mb-4">
                     <button
                       type="button"
                       onClick={() => setIsScheduled(false)}
@@ -720,14 +444,14 @@ export default function RoamTogether() {
                         type="date"
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
                         min={new Date().toISOString().split("T")[0]}
                       />
                       <input
                         type="time"
                         value={travelTime}
                         onChange={(e) => setTravelTime(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
                       />
                     </div>
                   )}
@@ -746,46 +470,23 @@ export default function RoamTogether() {
               </div>
 
               <button
-                className="w-full bg-black text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl"
-                disabled={!fromLocation || !toLocation}
+                onClick={handleSubmit}
+                className="w-full bg-black text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!fromLocation || !toLocation || isSubmitting}
               >
-                <Users className="w-5 h-5" />
-                <span>Find Travel Companions</span>
-                <ArrowRight className="w-5 h-5" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Searching...</span>
+                  </>
+                ) : (
+                  <>
+                    <Users className="w-5 h-5" />
+                    <span>Find Travel Companions</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </>
+                )}
               </button>
-            </div>
-
-            {/* Trust Indicators */}
-            <div className="grid grid-cols-3 gap-6 pt-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">
-                    Verified Users
-                  </div>
-                  <div className="text-sm text-gray-600">100% ID verified</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Star className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">4.8 Rating</div>
-                  <div className="text-sm text-gray-600">50k+ reviews</div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <div className="font-medium text-gray-900">24/7 Support</div>
-                  <div className="text-sm text-gray-600">Always here</div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -794,29 +495,29 @@ export default function RoamTogether() {
             <div className="relative">
               <div className="relative overflow-hidden rounded-2xl shadow-2xl">
                 <div className="aspect-[4/5] relative">
-                  <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-100 relative overflow-hidden">
+                  <div className="w-full h-full bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
                     <div className="absolute inset-0">
                       {/* Sky gradient */}
-                      <div className="h-1/2 bg-gradient-to-b from-blue-300 to-blue-400"></div>
+                      <div className="h-1/2 bg-gradient-to-b from-gray-300 to-gray-400"></div>
                       {/* Ground */}
-                      <div className="h-1/2 bg-gradient-to-t from-green-400 via-green-300 to-blue-400"></div>
+                      <div className="h-1/2 bg-gradient-to-t from-gray-400 via-gray-300 to-gray-400"></div>
 
                       {/* Mountains */}
                       <div className="absolute bottom-1/2 left-0 right-0 h-32">
                         <svg viewBox="0 0 400 100" className="w-full h-full">
                           <path
                             d="M0,100 L0,60 L50,20 L100,40 L150,15 L200,35 L250,10 L300,30 L350,25 L400,45 L400,100 Z"
-                            fill="rgba(34, 197, 94, 0.8)"
+                            fill="rgba(0, 0, 0, 0.8)"
                           />
                           <path
                             d="M0,100 L0,70 L60,30 L120,50 L180,25 L240,45 L300,20 L360,40 L400,35 L400,100 Z"
-                            fill="rgba(22, 163, 74, 0.6)"
+                            fill="rgba(0, 0, 0, 0.6)"
                           />
                         </svg>
                       </div>
 
                       {/* Sun */}
-                      <div className="absolute top-8 right-16 w-16 h-16 bg-yellow-300 rounded-full shadow-lg"></div>
+                      <div className="absolute top-8 right-16 w-16 h-16 bg-gray-300 rounded-full shadow-lg"></div>
 
                       {/* Clouds */}
                       <div className="absolute top-12 left-8 w-20 h-8 bg-white rounded-full opacity-80"></div>
@@ -850,39 +551,7 @@ export default function RoamTogether() {
                   </div>
                 </div>
               </div>
-
-              {/* Floating Stats Card */}
-              <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-4 border border-gray-100">
-                <div className="flex items-center space-x-3">
-                  <div className="flex -space-x-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-green-500 rounded-full border-2 border-white"></div>
-                    <div className="w-8 h-8 bg-purple-500 rounded-full border-2 border-white"></div>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-gray-900">2,847</div>
-                    <div className="text-sm text-gray-600">
-                      Active travelers
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center space-y-4">
-          <p className="text-gray-600">Trusted by travelers worldwide</p>
-          <div className="flex justify-center items-center space-x-8 opacity-60">
-            <div className="text-2xl font-bold text-gray-400">Forbes</div>
-            <div className="text-2xl font-bold text-gray-400">TechCrunch</div>
-            <div className="text-2xl font-bold text-gray-400">
-              Travel + Leisure
-            </div>
-            <div className="text-2xl font-bold text-gray-400">CNN Travel</div>
           </div>
         </div>
       </div>

@@ -10,15 +10,29 @@ import { v4 as uuidv4 } from "uuid";
 export async function POST(req) {
   await connectdb();
   try {
-    const { userToken, source, destination, time } = await req.json();
+    const { userToken, fromLocation, toLocation, time } = await req.json();
     const usertokenuuid = uuidv4();
+
+    const findtraveler = await SecduleSchemaSave.findOne({
+      source: fromLocation,
+      destination: toLocation,
+    });
+    console.log(findtraveler);
+    if (findtraveler) {
+      return NextResponse.json({
+        message: "congo",
+        data: findtraveler.userToken,
+        traveltoken: findtraveler.traveltoken,
+      });
+    }
     const sechduleit = new SecduleSchemaSave({
       userToken,
-      source,
-      destination,
+      source: fromLocation,
+      destination: toLocation,
       time,
       traveltoken: usertokenuuid,
     });
+
     const sechdule = sechduleit.save();
 
     return NextResponse.json({
