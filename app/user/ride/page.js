@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MapPin,
   Users,
@@ -104,6 +104,60 @@ const UserCard = ({ user, onAccept, onReject }) => {
   );
 };
 
+const MatchedPopup = ({ isOpen, onClose, data, onConfirm }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Users className="w-8 h-8 text-green-600" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">
+            Travel Companion Matched!
+          </h3>
+          <p className="text-gray-600">
+            You've successfully matched with a travel companion.
+          </p>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div className="bg-gray-50 rounded-lg p-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">From:</span>
+              <span className="font-medium">{data?.source}</span>
+            </div>
+            <div className="flex justify-between text-sm mt-2">
+              <span className="text-gray-600">To:</span>
+              <span className="font-medium">{data?.destination}</span>
+            </div>
+            <div className="flex justify-between text-sm mt-2">
+              <span className="text-gray-600">Travel Token:</span>
+              <span className="font-medium text-xs">{data?.travelToken}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex space-x-3">
+          <button
+            onClick={onClose}
+            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Close
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            View Details
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function RoamTogether() {
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
@@ -115,6 +169,28 @@ export default function RoamTogether() {
   const [showResults, setShowResults] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
+  const [showMatchedPopup, setShowMatchedPopup] = useState(false);
+  const [matchedData, setMatchedData] = useState(null);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [dataaccept, setdataccept] = useState({
+    source: "",
+    destination: "",
+    travelToken: "",
+    userToken: [],
+    completed: "",
+    time: "",
+    vehicleNumber: "",
+    driverReview: "",
+  });
+
+  // Update dataaccept when locations change
+  useEffect(() => {
+    setdataccept(prev => ({
+      ...prev,
+      source: fromLocation,
+      destination: toLocation
+    }));
+  }, [fromLocation, toLocation]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -174,8 +250,16 @@ export default function RoamTogether() {
       if (data.message === "congo") {
         setIsLoadingProfiles(true);
         setShowResults(true);
+        
+        // Update dataaccept with the response data
+        setdataccept(prev => ({
+          ...prev,
+          source: data.src,
+          destination: data.des,
+          travelToken: data.traveltoken,
+          userToken: [data.data]
+        }));
 
-        // Fetch user profiles
         try {
           console.log("Fetching profile for user token:", data.data);
 
@@ -230,16 +314,63 @@ export default function RoamTogether() {
     setFoundUsers([]);
     setSubmitError("");
     setIsLoadingProfiles(false);
+    setSuccessMessage("");
+    setShowMatchedPopup(false);
+    setMatchedData(null);
+  };
+
+  const handleViewDetails = () => {
+    setShowMatchedPopup(false);
+    // You can add navigation logic here or show more detailed information
+    console.log("Viewing details for matched travel:", matchedData);
   };
 
   const handleAcceptUser = async (user) => {
     console.log("Accepting user:", user);
-    // Implement accept logic here
+    
+    try {
+      // Add the accepted user token to the userToken array
+      const updatedUserTokens = [...dataaccept.userToken, user.userToken || user._id];
+      
+      // Update the dataaccept state
+      const updatedDataAccept = {
+        ...dataaccept,
+        userToken: updatedUserTokens,
+        completed: false,
+        time: isScheduled ? `${travelDate}T${travelTime}:00.000Z` : new Date().toISOString(),
+        vehicleNumber: "",
+        driverReview: "",
+      };
+      
+      setdataccept(updatedDataAccept);
+      
+      // Call the user-matched API
+      const response = await fetch("/api/user-travel/user-matched", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedDataAccept),
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("User matched successfully:", data);
+        setMatchedData(data);
+        setShowMatchedPopup(true);
+        setSuccessMessage("Travel companion accepted successfully!");
+      } else {
+        console.error("Failed to match user:", response.status);
+        // You can add error handling here
+      }
+    } catch (error) {
+      console.error("Error accepting user:", error);
+      // You can add error handling here
+    }
   };
 
   const handleRejectUser = async (user) => {
     console.log("Rejecting user:", user);
-    // Implement reject logic here
   };
 
   if (showResults) {
@@ -303,6 +434,16 @@ export default function RoamTogether() {
           {/* Results */}
           {!isLoadingProfiles && (
             <>
+              {/* Success Message */}
+              {successMessage && (
+                <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="flex items-center space-x-2 text-green-800">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="font-medium">{successMessage}</span>
+                  </div>
+                </div>
+              )}
+
               {foundUsers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {foundUsers.map((user, index) => (
@@ -341,6 +482,14 @@ export default function RoamTogether() {
               )}
             </>
           )}
+
+          {/* Matched Popup */}
+          <MatchedPopup
+            isOpen={showMatchedPopup}
+            onClose={() => setShowMatchedPopup(false)}
+            data={matchedData}
+            onConfirm={handleViewDetails}
+          />
         </div>
       </div>
     );
@@ -555,6 +704,12 @@ export default function RoamTogether() {
           </div>
         </div>
       </div>
+      <MatchedPopup
+        isOpen={showMatchedPopup}
+        onClose={() => setShowMatchedPopup(false)}
+        data={matchedData}
+        onConfirm={handleViewDetails}
+      />
     </div>
   );
 }

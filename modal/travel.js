@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const travelSchema = new mongoose.Schema({
-  trvaeltoken: {
+  travelToken: {
     type: String,
   },
   userToken: {
@@ -23,6 +23,9 @@ const travelSchema = new mongoose.Schema({
   time: {
     type: Date,
     default: Date.now,
+  },
+  vehicleNumber: {
+    type: String,
   },
 
   driverReview: {

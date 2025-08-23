@@ -21,6 +21,8 @@ export async function POST(req) {
     if (findtraveler) {
       return NextResponse.json({
         message: "congo",
+        src: findtraveler.source,
+        des: findtraveler.destination,
         data: findtraveler.userToken,
         traveltoken: findtraveler.traveltoken,
       });

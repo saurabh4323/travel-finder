@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+
 import {
   User,
   Mail,
@@ -13,14 +14,45 @@ import {
   MapPin,
   Star,
 } from "lucide-react";
+import axios from "axios";
 
 const ProfilePage = () => {
   const params = useParams();
   const userToken = params?.userToken;
   const [userData, setUserData] = useState(null);
+  const [edit, setedit] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [updatedata, setupdatedata] = useState({
+    name: "",
+    email: "",
+    age: "",
+    phoneNumber: "",
+  });
+
+  const handlechange = (e) => {
+    const { name, value } = e.target;
+    setupdatedata({ ...updatedata, [name]: value });
+  };
+
+  const handlesub = async (e) => {
+    e.preventDefault();
+    setedit(!edit);
+    const response = await axios.put(
+      `/api/user-profile/${userToken}`,
+      updatedata
+    );
+    console.log(response.data.success);
+    if (response.data.success) {
+      alert("profile updated successfully");
+    } else {
+      alert("profile update went wrong");
+    }
+  };
+  const nowedit = () => {
+    setedit(true);
+  };
   useEffect(() => {
     const fetchUserProfile = async () => {
       if (!userToken) return;
@@ -38,6 +70,11 @@ const ProfilePage = () => {
         const result = await response.json();
 
         if (result.ok && result.data) {
+          updatedata.name = result.data.name;
+          updatedata.email = result.data.email;
+          updatedata.phoneNumber = result.data.phoneNumber;
+          updatedata.age = result.data.age;
+
           setUserData(result.data);
         } else {
           throw new Error("Invalid response format or no data found");
@@ -175,7 +212,7 @@ const ProfilePage = () => {
                 {/* Profile Info */}
                 <div className="text-center lg:text-left flex-1">
                   <h1 className="text-5xl font-bold text-white mb-3">
-                    {userData.name || "User"}
+                    <input value={updatedata.name}></input>
                   </h1>
                   <div className="flex flex-col lg:flex-row lg:items-center space-y-3 lg:space-y-0 lg:space-x-8 text-gray-300 mb-4">
                     <div className="flex items-center justify-center lg:justify-start space-x-2">
@@ -225,7 +262,12 @@ const ProfilePage = () => {
                         Full Name
                       </label>
                       <p className="text-lg text-gray-800 font-medium bg-white p-3 rounded-lg">
-                        {userData.name || "Not provided"}
+                        <input
+                          name="name"
+                          readOnly={!edit}
+                          value={updatedata.name}
+                          onChange={handlechange}
+                        ></input>
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -233,7 +275,12 @@ const ProfilePage = () => {
                         Age
                       </label>
                       <p className="text-lg text-gray-800 font-medium bg-white p-3 rounded-lg">
-                        {userData.age || "Not provided"}
+                        <input
+                          name="age"
+                          readOnly={!edit}
+                          value={updatedata.age}
+                          onChange={handlechange}
+                        ></input>
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -241,7 +288,12 @@ const ProfilePage = () => {
                         Email Address
                       </label>
                       <p className="text-lg text-gray-800 font-medium bg-white p-3 rounded-lg">
-                        {userData.email}
+                        <input
+                          name="email"
+                          readOnly={!edit}
+                          value={updatedata.email}
+                          onChange={handlechange}
+                        ></input>
                       </p>
                     </div>
                     <div className="space-y-2">
@@ -250,7 +302,12 @@ const ProfilePage = () => {
                       </label>
                       <p className="text-lg text-gray-800 font-medium bg-white p-3 rounded-lg flex items-center">
                         <Phone className="w-4 h-4 mr-2 text-gray-500" />
-                        {formatPhone(userData.phoneNumber)}
+                        <input
+                          name="phoneNumber"
+                          readOnly={!edit}
+                          value={updatedata.phoneNumber}
+                          onChange={handlechange}
+                        ></input>
                       </p>
                     </div>
                   </div>
@@ -297,7 +354,12 @@ const ProfilePage = () => {
                     Quick Actions
                   </h3>
                   <div className="space-y-3">
-                    <button className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors flex items-center justify-center">
+                    <button
+                      className="w-full bg-gray-800 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors flex items-center justify-center"
+                      onClick={() => {
+                        window.location.href = "/user/ride";
+                      }}
+                    >
                       <Car className="w-4 h-4 mr-2" />
                       Book a Ride
                     </button>
@@ -305,10 +367,29 @@ const ProfilePage = () => {
                       <MapPin className="w-4 h-4 mr-2" />
                       View Trips
                     </button>
-                    <button className="w-full bg-white border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium hover:border-gray-300 transition-colors flex items-center justify-center">
-                      <User className="w-4 h-4 mr-2" />
-                      Edit Profile
-                    </button>
+                    {edit ? (
+                      <div>
+                        {" "}
+                        <button
+                          className="w-full bg-white border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium hover:border-gray-300 transition-colors flex items-center justify-center"
+                          onClick={handlesub}
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Save profile
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        {" "}
+                        <button
+                          className="w-full bg-white border-2 border-gray-200 text-gray-700 py-3 px-4 rounded-lg font-medium hover:border-gray-300 transition-colors flex items-center justify-center"
+                          onClick={nowedit}
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Edit Profile
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
