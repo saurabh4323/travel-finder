@@ -118,7 +118,7 @@ const MatchedPopup = ({ isOpen, onClose, data, onConfirm }) => {
             Travel Companion Matched!
           </h3>
           <p className="text-gray-600">
-            You've successfully matched with a travel companion.
+            You have successfully matched with a travel companion.
           </p>
         </div>
 
