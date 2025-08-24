@@ -21,6 +21,7 @@ const UserCard = ({ user, onAccept, onReject }) => {
     try {
       if (onAccept) await onAccept(user);
     } catch (error) {
+      v;
       console.error("Error accepting user:", error);
     } finally {
       setIsProcessing(false);
@@ -159,6 +160,7 @@ const MatchedPopup = ({ isOpen, onClose, data, onConfirm }) => {
 };
 
 export default function RoamTogether() {
+  const [localtoken, setlocaltoken] = useState("");
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
   const [travelDate, setTravelDate] = useState("");
@@ -185,10 +187,10 @@ export default function RoamTogether() {
 
   // Update dataaccept when locations change
   useEffect(() => {
-    setdataccept(prev => ({
+    setdataccept((prev) => ({
       ...prev,
       source: fromLocation,
-      destination: toLocation
+      destination: toLocation,
     }));
   }, [fromLocation, toLocation]);
 
@@ -218,6 +220,7 @@ export default function RoamTogether() {
             ? window.localStorage.getItem("rider")
             : null;
         userToken = storedToken || "default-user-token";
+        setlocaltoken(userToken);
       } catch (error) {
         userToken = "default-user-token";
       }
@@ -250,14 +253,14 @@ export default function RoamTogether() {
       if (data.message === "congo") {
         setIsLoadingProfiles(true);
         setShowResults(true);
-        
+
         // Update dataaccept with the response data
-        setdataccept(prev => ({
+        setdataccept((prev) => ({
           ...prev,
           source: data.src,
           destination: data.des,
           travelToken: data.traveltoken,
-          userToken: [data.data]
+          userToken: [data.data],
         }));
 
         try {
@@ -327,23 +330,28 @@ export default function RoamTogether() {
 
   const handleAcceptUser = async (user) => {
     console.log("Accepting user:", user);
-    
+
     try {
       // Add the accepted user token to the userToken array
-      const updatedUserTokens = [...dataaccept.userToken, user.userToken || user._id];
-      
+      // alert(user.userToken);
+      alert(localtoken);
+
+      const updatedUserTokens = [...dataaccept.userToken, localtoken];
+
       // Update the dataaccept state
       const updatedDataAccept = {
         ...dataaccept,
         userToken: updatedUserTokens,
         completed: false,
-        time: isScheduled ? `${travelDate}T${travelTime}:00.000Z` : new Date().toISOString(),
+        time: isScheduled
+          ? `${travelDate}T${travelTime}:00.000Z`
+          : new Date().toISOString(),
         vehicleNumber: "",
         driverReview: "",
       };
-      
+
       setdataccept(updatedDataAccept);
-      
+
       // Call the user-matched API
       const response = await fetch("/api/user-travel/user-matched", {
         method: "POST",
@@ -352,13 +360,14 @@ export default function RoamTogether() {
         },
         body: JSON.stringify(updatedDataAccept),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log("User matched successfully:", data);
         setMatchedData(data);
         setShowMatchedPopup(true);
         setSuccessMessage("Travel companion accepted successfully!");
+        window.location.href = `/user/ride/${dataaccept.travelToken}`;
       } else {
         console.error("Failed to match user:", response.status);
         // You can add error handling here

@@ -1,6 +1,9 @@
 import mongoose from "mongoose";
 
 const driverSchema = new mongoose.Schema({
+  location: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,

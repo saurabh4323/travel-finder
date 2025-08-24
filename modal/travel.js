@@ -34,7 +34,7 @@ const travelSchema = new mongoose.Schema({
 });
 
 const travelSchemaSave =
-  mongoose.models.travelSchema ||
-  mongoose.model("travelSchemasave", travelSchema);
+  mongoose.models.travelSchemaSave ||
+  mongoose.model("travelSchemaSave", travelSchema);
 
 export default travelSchemaSave;

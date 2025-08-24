@@ -39,3 +39,17 @@ export async function POST(request) {
     console.log(err);
   }
 }
+
+export async function GET(req) {
+  await connectdb();
+  const dataall = await travelSchemaSave.find({});
+  if (dataall) {
+    return NextResponse.json({
+      dataall,
+    });
+  } else {
+    return NextResponse.json({
+      msg: "chla ja",
+    });
+  }
+}
