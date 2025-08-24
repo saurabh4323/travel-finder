@@ -6,14 +6,18 @@ import { useState } from "react";
 
 export default function Page() {
   const [data, setData] = useState([]);
-  const [vehicleNumber, setVehicleNumber] = useState(
-    localStorage.getItem("vehicleNumber")
-  ); // Default vehicle number since localStorage not available
+  const [vehicleNumber, setVehicleNumber] = useState(""); // Default vehicle number since localStorage not available
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getData();
+    if (typeof window !== "undefined") {
+      const storedVehicle = localStorage.getItem("vehicleNumber");
+      if (storedVehicle) {
+        setVehicleNumber(storedVehicle);
+      }
+    }
   }, []);
 
   const getData = async () => {
