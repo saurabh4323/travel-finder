@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   MapPin,
   Users,
@@ -163,6 +163,10 @@ export default function RoamTogether() {
   const [localtoken, setlocaltoken] = useState("");
   const [fromLocation, setFromLocation] = useState("");
   const [toLocation, setToLocation] = useState("");
+  const [sourceSuggestions, setSourceSuggestions] = useState([]);
+  const [destSuggestions, setDestSuggestions] = useState([]);
+  const debounceRef = useRef(null);
+  const LOCATIONIQ_KEY = "pk.7f20e9fb7d1d9e990a8c627f8c1a50f5";
   const [travelDate, setTravelDate] = useState("");
   const [travelTime, setTravelTime] = useState("");
   const [isScheduled, setIsScheduled] = useState(false);
@@ -193,6 +197,60 @@ export default function RoamTogether() {
       destination: toLocation,
     }));
   }, [fromLocation, toLocation]);
+
+  const fetchLocationIQAutosuggest = async (query) => {
+    try {
+      const key = LOCATIONIQ_KEY;
+      if (!key || !query) return [];
+      const url = `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(
+        query
+      )}&limit=6&countrycodes=in&format=json`;
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const j = await res.json();
+      if (!j || !Array.isArray(j)) return [];
+      return j
+        .filter((i) => i && (i.lat || i.lon))
+        .map((i) => ({
+          label:
+            i.display_name ||
+            i.name ||
+            `${i.address?.road || ""} ${i.address?.city || ""}`.trim(),
+          pos: [parseFloat(i.lat), parseFloat(i.lon)],
+        }));
+    } catch (e) {
+      console.error("LocationIQ autosuggest error", e);
+      return [];
+    }
+  };
+
+  const handleFromInput = (v) => {
+    setFromLocation(v);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const items = await fetchLocationIQAutosuggest(v);
+      setSourceSuggestions(items);
+    }, 300);
+  };
+
+  const handleToInput = (v) => {
+    setToLocation(v);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      const items = await fetchLocationIQAutosuggest(v);
+      setDestSuggestions(items);
+    }, 300);
+  };
+
+  const selectFromSuggestion = (s) => {
+    setFromLocation(s.label);
+    setSourceSuggestions([]);
+  };
+
+  const selectToSuggestion = (s) => {
+    setToLocation(s.label);
+    setDestSuggestions([]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -543,20 +601,46 @@ export default function RoamTogether() {
                   <input
                     id="from-location"
                     value={fromLocation}
-                    onChange={(e) => setFromLocation(e.target.value)}
+                    onChange={(e) => handleFromInput(e.target.value)}
                     placeholder="Enter your starting location"
                     className="w-full pl-10 text-black pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
                   />
+                  {sourceSuggestions && sourceSuggestions.length > 0 && (
+                    <ul className="absolute z-50 bg-white border border-gray-200 w-full mt-1 max-h-48 overflow-auto rounded-md">
+                      {sourceSuggestions.map((s, i) => (
+                        <li
+                          key={i}
+                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => selectFromSuggestion(s)}
+                        >
+                          {s.label}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
                 <div className="relative">
                   <MapPin className="w-4 h-4 absolute left-3 top-3 text-black" />
                   <input
                     id="to-location"
                     value={toLocation}
-                    onChange={(e) => setToLocation(e.target.value)}
+                    onChange={(e) => handleToInput(e.target.value)}
                     placeholder="Where are you going?"
                     className="w-full pl-10 text-black pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm bg-white"
                   />
+                  {destSuggestions && destSuggestions.length > 0 && (
+                    <ul className="absolute z-50 bg-white border border-gray-200 w-full mt-1 max-h-48 overflow-auto rounded-md">
+                      {destSuggestions.map((s, i) => (
+                        <li
+                          key={i}
+                          className="p-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => selectToSuggestion(s)}
+                        >
+                          {s.label}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
 
                 {/* Travel Time Options */}

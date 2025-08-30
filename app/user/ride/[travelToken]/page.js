@@ -1,8 +1,7 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
-  MapPin,
   Users,
   Clock,
   Car,
@@ -11,10 +10,11 @@ import {
   User,
   Navigation,
   Loader2,
-  Route,
 } from "lucide-react";
-
+import Map from "./Map";
 export default function TravelCompanionPage() {
+  const { travelToken } = useParams();
+
   const [travelData, setTravelData] = useState(null);
   const [userDetails, setUserDetails] = useState([]);
   const [driverDetails, setDriverDetails] = useState(null);
@@ -22,170 +22,22 @@ export default function TravelCompanionPage() {
   const [driverLoading, setDriverLoading] = useState(false);
   const [searchingDriver, setSearchingDriver] = useState(true);
   const [error, setError] = useState(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
-  const mapRef = useRef(null);
-  const leafletMapRef = useRef(null);
+  const [routeInfo, setRouteInfo] = useState({
+    distance: null,
+    duration: null,
+  });
 
-  // Get travelToken from URL params
-  const params = useParams();
-  const travelToken = params?.travelToken;
-
-  // Load Leaflet CSS and JS
-  useEffect(() => {
-    if (!mapLoaded) {
-      // Load Leaflet CSS
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
-      document.head.appendChild(link);
-
-      // Load Leaflet JS
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-      script.onload = () => setMapLoaded(true);
-      document.head.appendChild(script);
-
-      return () => {
-        document.head.removeChild(link);
-        document.head.removeChild(script);
-      };
-    }
-  }, [mapLoaded]);
+  // Add missing state variables for location input
+  const [sourceQuery, setSourceQuery] = useState("");
+  const [destQuery, setDestQuery] = useState("");
+  const [sourceSuggestions, setSourceSuggestions] = useState([]);
+  const [destSuggestions, setDestSuggestions] = useState([]);
 
   useEffect(() => {
     if (travelToken) {
       fetchTravelData();
     }
   }, [travelToken]);
-
-  // Initialize map when data is loaded and Leaflet is available
-  useEffect(() => {
-    if (
-      mapLoaded &&
-      travelData &&
-      window.L &&
-      mapRef.current &&
-      !leafletMapRef.current
-    ) {
-      initializeMap();
-    }
-  }, [mapLoaded, travelData]);
-
-  const initializeMap = async () => {
-    try {
-      // Initialize the map centered on India
-      const map = window.L.map(mapRef.current).setView([20.5937, 78.9629], 5);
-
-      // Add OpenStreetMap tiles
-      window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
-
-      leafletMapRef.current = map;
-
-      // Geocode source and destination
-      const sourceCoords = await geocodeLocation(travelData.source);
-      const destCoords = await geocodeLocation(travelData.destination);
-
-      if (sourceCoords && destCoords) {
-        // Add markers
-        const sourceMarker = window.L.marker(sourceCoords, {
-          icon: createCustomIcon("green", "🏁"),
-        }).addTo(map);
-
-        const destMarker = window.L.marker(destCoords, {
-          icon: createCustomIcon("red", "🎯"),
-        }).addTo(map);
-
-        // Add popups
-        sourceMarker.bindPopup(`<strong>Start:</strong> ${travelData.source}`);
-        destMarker.bindPopup(
-          `<strong>Destination:</strong> ${travelData.destination}`
-        );
-
-        // Draw route line
-        const routeLine = window.L.polyline([sourceCoords, destCoords], {
-          color: travelData.completed ? "green" : "blue",
-          weight: 4,
-          opacity: 0.8,
-          dashArray: travelData.completed ? null : "10, 10",
-        }).addTo(map);
-
-        // Add current position marker if journey is in progress
-        if (!travelData.completed) {
-          const midPoint = [
-            (sourceCoords[0] + destCoords[0]) / 2,
-            (sourceCoords[1] + destCoords[1]) / 2,
-          ];
-
-          const currentMarker = window.L.marker(midPoint, {
-            icon: createCustomIcon("blue", "🚗"),
-          }).addTo(map);
-
-          currentMarker.bindPopup(
-            "<strong>Current Location</strong><br/>Vehicle en route"
-          );
-
-          // Animate the marker
-          setInterval(() => {
-            const lat = midPoint[0] + (Math.random() - 0.5) * 0.01;
-            const lng = midPoint[1] + (Math.random() - 0.5) * 0.01;
-            currentMarker.setLatLng([lat, lng]);
-          }, 3000);
-        }
-
-        // Fit map to show both points
-        const group = new window.L.featureGroup([sourceMarker, destMarker]);
-        map.fitBounds(group.getBounds().pad(0.1));
-      }
-    } catch (error) {
-      console.error("Error initializing map:", error);
-    }
-  };
-
-  const createCustomIcon = (color, emoji) => {
-    return window.L.divIcon({
-      className: "custom-marker",
-      html: `
-        <div style="
-          background-color: ${color};
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 2px solid white;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          font-size: 16px;
-        ">
-          ${emoji}
-        </div>
-      `,
-      iconSize: [30, 30],
-      iconAnchor: [15, 15],
-    });
-  };
-
-  const geocodeLocation = async (locationName) => {
-    try {
-      // Use Nominatim API (free OpenStreetMap geocoding)
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-          locationName + ", India"
-        )}&format=json&limit=1&countrycodes=IN`
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      }
-      return null;
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      return null;
-    }
-  };
 
   const fetchTravelData = async () => {
     try {
@@ -195,6 +47,10 @@ export default function TravelCompanionPage() {
 
       if (data.findtravel) {
         setTravelData(data.findtravel);
+        // Set initial values for source and destination
+        setSourceQuery(data.findtravel.source || "");
+        setDestQuery(data.findtravel.destination || "");
+
         // Fetch user details for each userToken
         if (data.findtravel.userToken) {
           fetchUserDetails(data.findtravel.userToken);
@@ -224,13 +80,13 @@ export default function TravelCompanionPage() {
       const userPromises = userTokens.map(async (token) => {
         const response = await fetch(`/api/user-profile/${token}`);
         const data = await response.json();
-        console.log("User API response for token", token, ":", data); // Debug log
+        console.log("User API response for token", token, ":", data);
         return data;
       });
 
       const users = await Promise.all(userPromises);
       const validUsers = users.filter((user) => user && !user.error);
-      console.log("Valid users:", validUsers); // Debug log
+      console.log("Valid users:", validUsers);
       setUserDetails(validUsers);
     } catch (err) {
       console.error("Error fetching user details:", err);
@@ -245,7 +101,7 @@ export default function TravelCompanionPage() {
 
       if (data && !data.error) {
         setDriverDetails(data);
-        console.log("Driver details:", data.data); // Debug log
+        console.log("Driver details:", data.data);
       } else {
         console.error("Driver not found or error:", data);
       }
@@ -256,15 +112,42 @@ export default function TravelCompanionPage() {
     }
   };
 
+  // Add missing handler functions
+  const handleSourceInput = (value) => {
+    setSourceQuery(value);
+    // Add your location search logic here
+    // This would typically call a geocoding API
+  };
+
+  const handleDestInput = (value) => {
+    setDestQuery(value);
+    // Add your location search logic here
+    // This would typically call a geocoding API
+  };
+
+  const handleSelectSourceSuggestion = (suggestion) => {
+    setSourceQuery(suggestion.label);
+    setSourceSuggestions([]);
+  };
+
+  const handleSelectDestSuggestion = (suggestion) => {
+    setDestQuery(suggestion.label);
+    setDestSuggestions([]);
+  };
+
+  const handleRouteCalculated = (routeData) => {
+    setRouteInfo(routeData);
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
 
   const calculateProgress = () => {
-    if (!travelData) return 0;
-    if (travelData.completed) return 100;
-    if (!travelData.vehicleNumber) return 0;
-    return Math.random() * 40 + 30; // Simulate progress between 30-70%
+    if (travelData?.completed) return 100;
+    if (!travelData?.vehicleNumber) return 0;
+    // You can implement more sophisticated progress calculation here
+    return 25; // Default progress when journey started
   };
 
   if (loading) {
@@ -394,7 +277,7 @@ export default function TravelCompanionPage() {
               )}
             </div>
 
-            {/* Driver Information Section */}
+            {/* Driver Section */}
             {travelData?.vehicleNumber && (
               <div
                 className="border border-gray-200 rounded-lg shadow-sm p-6"
@@ -496,102 +379,8 @@ export default function TravelCompanionPage() {
                 )}
               </div>
             )}
-          </div>
 
-          {/* Route Progress and Journey Details Section */}
-          <div className="lg:col-span-2">
-            {/* Route Progress Map */}
-
-            {/* Journey Details */}
-            <div
-              className="border border-gray-200 rounded-lg shadow-sm p-6 mb-6"
-              style={{ backgroundColor: "#fffef9" }}
-            >
-              <div className="flex items-center mb-4">
-                <Navigation className="h-6 w-6 text-black mr-2" />
-                <h2 className="text-xl font-semibold text-black">
-                  Journey Details
-                </h2>
-              </div>
-
-              {travelData && (
-                <div className="space-y-6">
-                  {/* Route Information */}
-                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="flex flex-col items-center mr-4">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <div className="w-0.5 h-8 bg-gray-300 my-1"></div>
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      </div>
-                      <div>
-                        <div className="mb-4">
-                          <p className="text-sm text-gray-600">From</p>
-                          <p className="font-semibold text-black text-lg">
-                            {travelData.source}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-600">To</p>
-                          <p className="font-semibold text-black text-lg">
-                            {travelData.destination}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-right">
-                      <div className="flex items-center text-gray-600 mb-2">
-                        <Clock className="h-4 w-4 mr-2" />
-                        <span className="text-sm">
-                          {formatDate(travelData.time)}
-                        </span>
-                      </div>
-                      <div
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                          travelData.completed
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {travelData.completed ? "Completed" : "In Progress"}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Vehicle Information */}
-                  {travelData.vehicleNumber && (
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex items-center mb-2">
-                        <Car className="h-5 w-5 text-black mr-2" />
-                        <h3 className="font-semibold text-black">
-                          Vehicle Details
-                        </h3>
-                      </div>
-                      <p className="text-gray-600">
-                        Vehicle Number:{" "}
-                        <span className="font-mono font-semibold text-black">
-                          {travelData.vehicleNumber}
-                        </span>
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Driver Review */}
-                  {travelData.driverReview && (
-                    <div className="p-4 border border-gray-200 rounded-lg">
-                      <div className="flex items-center mb-2">
-                        <Star className="h-5 w-5 text-yellow-500 mr-2" />
-                        <h3 className="font-semibold text-black">
-                          Driver Review
-                        </h3>
-                      </div>
-                      <p className="text-gray-700">{travelData.driverReview}</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Searching Driver Section */}
             {searchingDriver && (
               <div
                 className="border border-gray-200 rounded-lg shadow-sm p-6"
@@ -621,187 +410,71 @@ export default function TravelCompanionPage() {
                 </div>
               </div>
             )}
-            <div
-              className="border border-gray-200 rounded-lg shadow-sm p-6 mb-6"
-              style={{ backgroundColor: "#fffef9" }}
-            >
-              <div className="flex items-center mb-4">
-                <MapPin className="h-6 w-6 text-black mr-2" />
-                <h2 className="text-xl font-semibold text-black">
-                  Route Progress
-                </h2>
-              </div>
-
-              {travelData && (
-                <div className="space-y-4">
-                  {/* Map Container */}
-                  <div className="relative">
-                    <div
-                      ref={mapRef}
-                      className="w-full h-96 rounded-lg border border-gray-200 bg-gray-100 relative overflow-hidden"
-                    >
-                      {!mapLoaded && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                          <div className="text-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-gray-600 mx-auto mb-2" />
-                            <p className="text-gray-600 text-sm">
-                              Loading map...
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Progress Bar */}
-                  <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-600">
-                        Journey Progress
-                      </span>
-                      <span className="text-sm font-bold text-gray-800">
-                        {Math.round(progress)}%
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                      <div
-                        className={`h-3 rounded-full transition-all duration-1000 ${
-                          travelData.completed
-                            ? "bg-gradient-to-r from-green-500 to-green-600"
-                            : "bg-gradient-to-r from-blue-500 to-blue-600"
-                        }`}
-                        style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-
-                  {/* Route Info Bar */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg border border-gray-200">
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                        <span className="text-sm font-medium text-gray-600">
-                          Starting Point
-                        </span>
-                      </div>
-                      <p className="font-semibold text-gray-800">
-                        {travelData.source}
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <div
-                          className={`w-3 h-3 rounded-full mr-2 ${
-                            travelData.completed
-                              ? "bg-green-500"
-                              : "bg-blue-500 animate-pulse"
-                          }`}
-                        ></div>
-                        <span className="text-sm font-medium text-gray-600">
-                          Current Status
-                        </span>
-                      </div>
-                      <p
-                        className={`font-semibold ${
-                          travelData.completed
-                            ? "text-green-600"
-                            : "text-blue-600"
-                        }`}
-                      >
-                        {travelData.completed ? "Journey Complete" : "En Route"}
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="flex items-center justify-center mb-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                        <span className="text-sm font-medium text-gray-600">
-                          Destination
-                        </span>
-                      </div>
-                      <p className="font-semibold text-gray-800">
-                        {travelData.destination}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* ETA and Distance Info */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center mb-2">
-                        <Clock className="h-5 w-5 text-blue-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">
-                          Estimated Time
-                        </span>
-                      </div>
-                      <p className="text-lg font-bold text-gray-800">
-                        {travelData.completed
-                          ? "Completed"
-                          : `${Math.round((100 - progress) * 2)} mins`}
-                      </p>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-center mb-2">
-                        <Route className="h-5 w-5 text-green-600 mr-2" />
-                        <span className="text-sm font-medium text-gray-600">
-                          Distance Covered
-                        </span>
-                      </div>
-                      <p className="text-lg font-bold text-gray-800">
-                        {Math.round(progress * 0.8)} km
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
+          </div>{" "}
+          <div className="lg:col-span-2">
+          
+              
+              <div className="h-full map-container">
+                {travelData && (
+                  <Map
+                    source={travelData.source}
+                    destination={travelData.destination}
+                    onRouteCalculated={handleRouteCalculated}
+                  />
+                )}
+              
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Emergency Contact Button */}
-        <div className="fixed bottom-6 right-6">
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105"
-            onClick={() => {
-              // Emergency contact functionality
-              if (travelData?.emergencyContact) {
-                window.open(`tel:${travelData.emergencyContact}`);
-              } else {
-                window.open(`tel:911`);
-              }
-            }}
-          >
-            <Phone className="h-6 w-6" />
-          </button>
-        </div>
+      {/* Emergency Contact Button */}
+      <div className="fixed bottom-6 right-6">
+        <button
+          className="bg-red-600 hover:bg-red-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105"
+          onClick={() => {
+            // Emergency contact functionality
+            if (travelData?.emergencyContact) {
+              window.open(`tel:${travelData.emergencyContact}`);
+            } else {
+              window.open(`tel:911`);
+            }
+          }}
+        >
+          <Phone className="h-6 w-6" />
+        </button>
+      </div>
 
-        {/* Share Travel Details Button */}
-        <div className="fixed bottom-6 left-6">
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105"
-            onClick={() => {
-              if (navigator.share && travelData) {
-                navigator.share({
-                  title: "Travel Details",
-                  text: `Journey from ${travelData.source} to ${travelData.destination}`,
-                  url: window.location.href,
-                });
-              } else if (travelData) {
-                // Fallback - copy to clipboard
-                navigator.clipboard.writeText(window.location.href);
-                alert("Travel link copied to clipboard!");
-              }
-            }}
-          >
-            <Users className="h-6 w-6" />
-          </button>
-        </div>
+      {/* Share Travel Details Button */}
+      <div className="fixed bottom-6 left-6">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 transform hover:scale-105"
+          onClick={() => {
+            if (navigator.share && travelData) {
+              navigator.share({
+                title: "Travel Details",
+                text: `Journey from ${travelData.source} to ${travelData.destination}`,
+                url: window.location.href,
+              });
+            } else if (travelData) {
+              // Fallback - copy to clipboard
+              navigator.clipboard.writeText(window.location.href);
+              alert("Travel link copied to clipboard!");
+            }
+          }}
+        >
+          <Users className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Custom Styles */}
       <style jsx>{`
+        /* Map container styles */
+        .map-container {
+          width: 100% !important;
+          height: 100%;
+        }
+
         .custom-marker {
           background: transparent !important;
           border: none !important;
@@ -841,7 +514,7 @@ export default function TravelCompanionPage() {
 
         /* Map container responsiveness */
         @media (max-width: 768px) {
-          .leaflet-container {
+          .map-container {
             height: 250px !important;
           }
         }

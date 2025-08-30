@@ -43,7 +43,8 @@ export default function Page() {
         // Auto hide popup after 3 seconds
         setTimeout(() => {
           setShowPopup(false);
-        }, 3000);
+        }, 2000);
+        window.location.href = `/user/ride/${travelToken}`;
       }
     } catch (error) {
       console.error("Error accepting travel:", error);
@@ -98,10 +99,7 @@ export default function Page() {
               <p className="text-gray-600 mb-6">
                 Your ride is going to start. Reach the source fast!
               </p>
-              <button
-                onClick={() => setShowPopup(false)}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors"
-              >
+              <button className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-colors">
                 Got it!
               </button>
             </div>
