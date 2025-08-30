@@ -677,7 +677,7 @@ export default function Map({
                       {mapStatus}
                     </p>
                     <p className="text-gray-500 text-sm mt-2">
-                      Enter locations above and click "Create Route" to get
+                      Enter locations above and click Create Route to get
                       started
                     </p>
                   </div>
